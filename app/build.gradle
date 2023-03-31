@@ -39,6 +39,8 @@ dependencies {
     implementation coreLibraries
     implementation coroutines
     implementation retrofit
+    implementation glide
+    annotationProcessor glideAnnotationProcessor
 
     testImplementation test
     androidTestImplementation androidTest
