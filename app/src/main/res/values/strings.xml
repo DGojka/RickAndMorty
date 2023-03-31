@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">RickAndMorty</string>
+    <string name="attribute_gender">Gender: %1$s</string>
+    <string name="attribute_location">Location: %1$s</string>
+    <string name="attribute_species">Species: %1$s</string>
+    <string name="attribute_origin">Origin: %1$s</string>
 </resources>

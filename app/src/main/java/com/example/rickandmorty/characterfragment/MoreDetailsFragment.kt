@@ -53,10 +53,10 @@ class MoreDetailsFragment : Fragment() {
             binding.moreInfoCharacterName.text = name
             binding.moreInfoStatus.text = status
 
-            binding.gender.text = "Gender: $gender"
-            binding.locationName.text = "Location: ${location.name}"
-            binding.species.text = "Species: $species"
-            binding.origin.text = "Origin: ${origin.name}"
+            binding.gender.text = String.format(resources.getString(R.string.attribute_gender),gender)
+            binding.locationName.text = String.format(resources.getString(R.string.attribute_location),location.name)
+            binding.species.text = String.format(resources.getString(R.string.attribute_species),species)
+            binding.origin.text = String.format(resources.getString(R.string.attribute_origin),origin.name)
             binding.moreInfoStatus.setTextColor(if (status == "Alive") Color.GREEN else Color.RED)
         }
     }

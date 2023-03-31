@@ -1,7 +1,6 @@
 package com.example.rickandmorty.characterfragment
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +28,6 @@ class PersonsListFragment : Fragment() {
     ): View? {
         _binding = FragmentCharactersListBinding.inflate(inflater, container, false)
         adapter = CharacterListAdapter { person ->
-            Log.e("clicked", person.toString())
             viewModel.moreDetails(person,findNavController())
         }
         binding?.recyclerView?.adapter = adapter
