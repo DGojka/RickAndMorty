@@ -1,6 +1,9 @@
 package com.example.rickandmorty.characterfragment
 
+import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +21,7 @@ class PersonsListFragment : Fragment() {
     private val binding get() = _binding
 
     private lateinit var adapter: CharacterListAdapter
-    private val viewModel: PersonsListViewModel by lazy{
+    private val viewModel: PersonsListViewModel by lazy {
         ViewModelProvider(requireActivity())[PersonsListViewModel::class.java]
     }
 
@@ -27,12 +30,11 @@ class PersonsListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentCharactersListBinding.inflate(inflater, container, false)
-        adapter = CharacterListAdapter { person ->
-            viewModel.moreDetails(person,findNavController())
+        adapter = CharacterListAdapter(requireContext()) { person ->
+            viewModel.moreDetails(person, findNavController())
         }
         binding?.recyclerView?.adapter = adapter
-
-        _binding!!.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
+        _binding?.searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
             androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -42,8 +44,51 @@ class PersonsListFragment : Fragment() {
                 adapter.filter.filter(newText)
                 return true
             }
+        })
+        binding?.manageFiltersButton?.setOnClickListener {
+            val options = arrayOf("favourites", "Dead", "Alive")
+            val selectedItems = ArrayList<Int>()
+            val prefs = requireContext().getSharedPreferences("Filters", Context.MODE_PRIVATE)
+            val savedItems = prefs.getStringSet("SelectedItems", null)
+            savedItems?.let {
+                for (i in it) {
+                    selectedItems.add(i.toInt())
+                }
+            }
+
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("Select Options")
+            builder.setMultiChoiceItems(options, null) { _, which, isChecked ->
+                if (isChecked) {
+                    selectedItems.add(which)
+                } else if (selectedItems.contains(which)) {
+                    selectedItems.remove(Integer.valueOf(which))
+                }
+            }
+
+            builder.setPositiveButton("OK") { _, _ ->
+                // handle OK button click
+                for (i in selectedItems.indices) {
+                    Log.d("TAG", options[selectedItems[i]])
+                }
+                // Save selected items to storage
+                val editor = prefs.edit()
+                val selectedSet = HashSet<String>()
+                for (i in selectedItems) {
+                    selectedSet.add(i.toString())
+                }
+                editor.putStringSet("SelectedItems", selectedSet)
+                editor.apply()
+            }
+
+            val dialog = builder.create()
+            dialog.setOnShowListener {
+                for (i in selectedItems) {
+                    dialog.listView.setItemChecked(i, true)
+                }
+            }
+            dialog.show()
         }
-        )
         return binding?.root
     }
 
