@@ -1,17 +1,16 @@
 package com.example.rickandmorty.characterfragment.list
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
-import com.example.rickandmorty.databinding.FragmentCharactersListBinding
+import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePersons
+import com.example.rickandmorty.characterfragment.list.helpers.listfilter.FilterPersons
 import com.example.rickandmorty.databinding.ListItemCharacterBinding
 import com.example.rickandmorty.network.Person
 
@@ -26,7 +25,7 @@ class CharacterListAdapter(
 
     private var personList = mutableListOf<Person>()
     private var filteredList = mutableListOf<Person>()
-    var favouritePersons = mutableListOf<Person>()
+    private var filterPersons: FilterPersons = FilterPersons(mutableListOf(), context)
 
     inner class CharacterViewHolder(private val binding: ListItemCharacterBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -38,58 +37,43 @@ class CharacterListAdapter(
                 .placeholder(R.drawable.placeholder)
                 .into(binding.characterImage)
 
-            val isFavourite = favouritePersons.contains(person)
+            val isFavourite = getFavouritePersons(context, personList).contains(person)
             binding.favouriteButton.setImageResource(if (isFavourite) R.drawable.ic_fav else R.drawable.ic_fav_border)
             binding.favouriteButton.setOnClickListener {
                 val editor =
-                    itemView.context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE).edit()
+                    itemView.context.getSharedPreferences("asd", Context.MODE_PRIVATE).edit()
+                val favPersons = getFavouritePersons(context, personList)
                 if (isFavourite) {
-                    favouritePersons.remove(person)
+                    favPersons.remove(person)
                     binding.favouriteButton.setImageResource(R.drawable.ic_fav_border)
                 } else {
-                    favouritePersons.add(person)
-                    Log.e("clicked",person.name)
+                    favPersons.add(person)
                     binding.favouriteButton.setImageResource(R.drawable.ic_fav)
                 }
+
                 editor.putStringSet(
                     "FavouritePersons",
-                    favouritePersons.map { it.name }.toSet()
+                    favPersons.map { it.name }.toSet()
                 )
-                Log.e(
-                    "context.getSharedPreferences(\"MyPrefs\", Context.MODE_PRIVATE)",
-                    context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-                        .getStringSet("FavouritePersons", mutableSetOf()).toString()
-                )
-                Log.e("asd",favouritePersons.toString())
                 editor.apply()
-                notifyDataSetChanged()
+                /*         filteredList.clear()
+                         filteredList.addAll(filterPersons.filter(""))
+                         notifyDataSetChanged()*/
             }
 
         }
     }
 
+    fun setData(data: List<Person>) {
+        personList.clear()
+        personList.addAll(data)
+        filterPersons = FilterPersons(personList, context)
+        filteredList.addAll(filterPersons.filter(""))
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterViewHolder {
         val view =
             ListItemCharacterBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        val binding =
-            FragmentCharactersListBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-        val searchView = binding.searchView
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                filter(newText)
-                return true
-            }
-        })
-
         return CharacterViewHolder(view)
     }
 
@@ -102,46 +86,18 @@ class CharacterListAdapter(
         return filteredList.size
     }
 
-    fun setData(data: List<Person>) {
-        personList.clear()
-        personList.addAll(data)
-        filter("")
-        updateFavouritePersons()
-    }
-
-    private fun filter(query: String?) {
-        filteredList.clear()
-        if (query.isNullOrEmpty()) {
-            filteredList.addAll(personList)
-        } else {
-            val filtered = personList.filter {
-                it.name.contains(query, ignoreCase = true) || it.status.contains(
-                    query,
-                    ignoreCase = true
-                )
-            }
-            filteredList.addAll(filtered)
-        }
-        notifyDataSetChanged()
-    }
-
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val filtered = personList.filter {
-                    it.name.contains(
-                        constraint.toString(),
-                        ignoreCase = true
-                    ) || it.status.contains(constraint.toString(), ignoreCase = true)
-                }
                 val filterResults = FilterResults()
-                filterResults.values = filtered
+                filterResults.values = filterPersons.filter(constraint)
+
                 return filterResults
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 filteredList.clear()
-                filteredList.addAll(results?.values as List<Person>)
+                filteredList = results?.values as MutableList<Person>
                 notifyDataSetChanged()
             }
         }
@@ -151,21 +107,16 @@ class CharacterListAdapter(
         return filteredList[position]
     }
 
-    override fun submitList(list: List<Person>?) {
-        super.submitList(list)
-        updateFavouritePersons()
+    fun applyFilters() {
+        filteredList.clear()
+        filteredList.addAll(filterPersons.filter(""))
+        notifyDataSetChanged()
     }
 
-    private fun stringSetToPersonList(stringSet: Set<String>): MutableList<Person> {
-        return stringSet.map { name -> personList.find { it.name == name }
-        }.filterNotNull().toMutableList()
-    }
-
-    private fun updateFavouritePersons() {
-        val prefs = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        favouritePersons =
-            stringSetToPersonList(
-                prefs.getStringSet("FavouritePersons", mutableSetOf()) ?: mutableSetOf()
-            )
+    companion object {
+        const val FAVOURITES = "favourites"
+        const val ALIVE = "Alive"
+        const val DEAD = "Dead"
+        const val UNKNOWN = "unknown"
     }
 }

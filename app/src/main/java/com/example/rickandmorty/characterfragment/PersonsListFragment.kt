@@ -68,8 +68,10 @@ class PersonsListFragment : Fragment() {
 
             builder.setPositiveButton("OK") { _, _ ->
                 // handle OK button click
+                val selectedFilterOptions = mutableListOf<String>()
                 for (i in selectedItems.indices) {
                     Log.d("TAG", options[selectedItems[i]])
+                    selectedFilterOptions.add(options[selectedItems[i]])
                 }
                 // Save selected items to storage
                 val editor = prefs.edit()
@@ -79,6 +81,7 @@ class PersonsListFragment : Fragment() {
                 }
                 editor.putStringSet("SelectedItems", selectedSet)
                 editor.apply()
+                adapter.applyFilters()
             }
 
             val dialog = builder.create()

@@ -12,10 +12,11 @@ data class Person(
     val image: String,
     val episode: List<String>,
     val url : String,
-    val created: String
-)
-
-data class Location(
-    val name: String,
-    val url: String
-)
+    val created: String,
+    val isFavourite: Boolean
+){
+    data class Location(
+        val name: String,
+        val url: String
+    )
+}

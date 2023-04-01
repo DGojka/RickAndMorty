@@ -1,6 +1,8 @@
 package com.example.rickandmorty.characterfragment.list.helpers
 
-data class Filters(
-    val favourites: Boolean = false,
-    val status: Boolean = false
-)
+enum class Filters {
+    FAVOURITE,
+    ALIVE,
+    DEAD,
+    UNKNOWN_FILTER
+}
