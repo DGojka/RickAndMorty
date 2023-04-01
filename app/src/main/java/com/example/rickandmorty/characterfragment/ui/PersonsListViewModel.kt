@@ -1,5 +1,6 @@
-package com.example.rickandmorty.characterfragment
+package com.example.rickandmorty.characterfragment.ui
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -32,6 +33,19 @@ class PersonsListViewModel : ViewModel() {
 
     fun onBackClick() {
         emitAllPersonsList()
+    }
+
+    fun saveSelectedFilters(context: Context, selectedItems: List<Int>) {
+        val prefs = context.getSharedPreferences("Filters", Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+        val selectedSet = selectedItems.map { it.toString() }.toSet()
+        editor.putStringSet("SelectedItems", selectedSet)
+        editor.apply()
+    }
+
+    fun getSavedFilters(context: Context): MutableSet<String>? {
+        val prefs = context.getSharedPreferences("Filters", Context.MODE_PRIVATE)
+        return prefs.getStringSet("SelectedItems", null)
     }
 
     private fun emitAllPersonsList() {

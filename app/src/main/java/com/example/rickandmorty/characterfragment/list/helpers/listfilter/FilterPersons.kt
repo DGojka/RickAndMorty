@@ -1,8 +1,6 @@
 package com.example.rickandmorty.characterfragment.list.helpers.listfilter
 
 import android.content.Context
-import com.example.rickandmorty.characterfragment.list.CharacterListAdapter
-import com.example.rickandmorty.characterfragment.list.helpers.Filters
 import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePersons
 import com.example.rickandmorty.network.Person
 
@@ -40,7 +38,7 @@ class FilterPersons(private val personList: List<Person>, private val context: C
             it.name.contains(
                 constraint.toString(),
                 ignoreCase = true
-            ) && it.status == CharacterListAdapter.UNKNOWN
+            ) && it.status == UNKNOWN
         }
 
     private fun filterFavouriteByDead(constraint: CharSequence?) =
@@ -48,7 +46,7 @@ class FilterPersons(private val personList: List<Person>, private val context: C
             it.name.contains(
                 constraint.toString(),
                 ignoreCase = true
-            ) && it.status == CharacterListAdapter.DEAD
+            ) && it.status == DEAD
         }
 
     private fun filterFavouriteByAlive(constraint: CharSequence?) =
@@ -56,7 +54,7 @@ class FilterPersons(private val personList: List<Person>, private val context: C
             it.name.contains(
                 constraint.toString(),
                 ignoreCase = true
-            ) && it.status == CharacterListAdapter.ALIVE
+            ) && it.status == ALIVE
         }
 
     private fun filterFavourite(constraint: CharSequence?) =
@@ -72,7 +70,7 @@ class FilterPersons(private val personList: List<Person>, private val context: C
             it.name.contains(
                 constraint.toString(),
                 ignoreCase = true
-            ) && it.status == CharacterListAdapter.DEAD
+            ) && it.status == DEAD
         }
 
     private fun filterByAlive(constraint: CharSequence?) =
@@ -80,7 +78,7 @@ class FilterPersons(private val personList: List<Person>, private val context: C
             it.name.contains(
                 constraint.toString(),
                 ignoreCase = true
-            ) && it.status == CharacterListAdapter.ALIVE
+            ) && it.status == ALIVE
         }
 
     private fun filterByNameOrStatus(constraint: CharSequence?) =
@@ -99,11 +97,17 @@ class FilterPersons(private val personList: List<Person>, private val context: C
     private fun List<String>.convertToFilterEnum(): List<Filters> {
         return this.map { intValue ->
             when (intValue) {
-                "0", CharacterListAdapter.FAVOURITES -> Filters.FAVOURITE
-                "1", CharacterListAdapter.DEAD -> Filters.DEAD
-                "2", CharacterListAdapter.UNKNOWN -> Filters.ALIVE
+                "0", FAVOURITES -> Filters.FAVOURITE
+                "1", DEAD -> Filters.DEAD
+                "2", UNKNOWN -> Filters.ALIVE
                 else -> Filters.UNKNOWN_FILTER
             }
         }
+    }
+    companion object {
+        const val FAVOURITES = "favourites"
+        const val ALIVE = "Alive"
+        const val DEAD = "Dead"
+        const val UNKNOWN = "unknown"
     }
 }

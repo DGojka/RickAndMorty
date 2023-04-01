@@ -1,4 +1,4 @@
-package com.example.rickandmorty.characterfragment
+package com.example.rickandmorty.characterfragment.ui
 
 import android.graphics.Color
 import android.os.Bundle

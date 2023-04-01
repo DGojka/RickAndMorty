@@ -1,4 +1,4 @@
-package com.example.rickandmorty.characterfragment
+package com.example.rickandmorty.characterfragment.ui
 
 import android.app.AlertDialog
 import android.content.Context
@@ -95,17 +95,75 @@ class PersonsListFragment : Fragment() {
         return binding?.root
     }
 
+    private fun showFiltersDialog() {
+        val options = arrayOf("favourites", "Dead", "Alive")
+        val selectedItems = getSelectedItemsFromStorage()
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Select Options")
+        builder.setMultiChoiceItems(
+            options,
+            getCheckedItems(selectedItems)
+        ) { _, which, isChecked ->
+            if (isChecked) {
+                selectedItems.add(which)
+            } else if (selectedItems.contains(which)) {
+                selectedItems.remove(which)
+            }
+        }
+        builder.setPositiveButton("OK") { _, _ ->
+            saveSelectedItemsToStorage(selectedItems)
+            adapter.applyFilters()
+        }
+        val dialog = builder.create()
+        dialog.show()
+        setCheckedItems(dialog, selectedItems)
+    }
+
+
+    private fun getSelectedItemsFromStorage(): ArrayList<Int> {
+        val prefs = requireContext().getSharedPreferences("Filters", Context.MODE_PRIVATE)
+        val savedItems = prefs.getStringSet("SelectedItems", null)
+        val selectedItems = ArrayList<Int>()
+        savedItems?.let {
+            for (i in it) {
+                selectedItems.add(i.toInt())
+            }
+        }
+        return selectedItems
+    }
+
+    private fun saveSelectedItemsToStorage(selectedItems: ArrayList<Int>) {
+        val prefs = requireContext().getSharedPreferences("Filters", Context.MODE_PRIVATE)
+        val selectedSet = HashSet<String>()
+        for (i in selectedItems) {
+            selectedSet.add(i.toString())
+        }
+        prefs.edit().putStringSet("SelectedItems", selectedSet).apply()
+    }
+
+    private fun getCheckedItems(selectedItems: ArrayList<Int>?): BooleanArray? {
+        return selectedItems?.map { true }?.toBooleanArray()
+    }
+
+    private fun setCheckedItems(dialog: AlertDialog, selectedItems: ArrayList<Int>) {
+        dialog.setOnShowListener {
+            for (i in selectedItems) {
+                dialog.listView.setItemChecked(i, true)
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
                 when (state) {
-                    PersonsListUiState.Init -> {}
                     is PersonsListUiState.Loaded -> {
                         adapter.submitList(state.persons)
                         adapter.setData(state.persons)
                     }
                     is PersonsListUiState.MoreDetails -> {}//view.findNavController().navigate(R.id.action_to_more_details_fragment)
+                    else -> {}
                 }
             }
         }

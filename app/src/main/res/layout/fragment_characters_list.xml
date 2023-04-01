@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".characterfragment.PersonsListFragment">
+    tools:context=".characterfragment.ui.PersonsListFragment">
 
     <Button
         android:id="@+id/manage_filters_button"
