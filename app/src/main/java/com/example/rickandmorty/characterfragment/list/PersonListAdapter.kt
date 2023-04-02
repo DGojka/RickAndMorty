@@ -31,23 +31,29 @@ class PersonListAdapter(
     inner class CharacterViewHolder(private val binding: ListItemCharacterBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(person: Person) {
-            binding.characterName.text = person.name
-            binding.root.setOnClickListener { onPersonClick(person) }
-            Glide.with(itemView)
-                .load(person.image)
-                .placeholder(R.drawable.placeholder)
-                .into(binding.characterImage)
+            with(binding) {
+                characterName.text = person.name
+                root.setOnClickListener { onPersonClick(person) }
+                Glide.with(itemView)
+                    .load(person.image)
+                    .placeholder(R.drawable.placeholder)
+                    .into(binding.characterImage)
 
-            val isFavourite = getFavouritePersons(context, allPersons).contains(person)
-            binding.favouriteButton.setImageResource(if (isFavourite) R.drawable.ic_fav else R.drawable.ic_fav_border)
-            binding.favouriteButton.setOnClickListener {
-                handleFavouriteButtonClick(binding, person)
+                val isFavourite = getFavouritePersons(context, allPersons).contains(person)
+                favouriteButton.setImageResource(if (isFavourite) R.drawable.ic_fav else R.drawable.ic_fav_border)
+                favouriteButton.setOnClickListener {
+                    handleFavouriteButtonClick(binding, person)
+                }
             }
         }
+
         private fun handleFavouriteButtonClick(binding: ListItemCharacterBinding, person: Person) {
-            val editor = itemView.context.getSharedPreferences(FAVOURITE_PERSONS, Context.MODE_PRIVATE).edit()
+            val editor =
+                itemView.context.getSharedPreferences(FAVOURITE_PERSONS, Context.MODE_PRIVATE)
+                    .edit()
             val favPersons = getFavouritePersons(context, allPersons)
             val isFavourite = favPersons.contains(person)
+
             if (isFavourite) {
                 favPersons.remove(person)
                 binding.favouriteButton.setImageResource(R.drawable.ic_fav_border)
@@ -55,6 +61,7 @@ class PersonListAdapter(
                 favPersons.add(person)
                 binding.favouriteButton.setImageResource(R.drawable.ic_fav)
             }
+
             editor.putStringSet(FAVOURITE_PERSONS, favPersons.map { it.name }.toSet())
             editor.apply()
         }

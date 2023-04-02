@@ -4,8 +4,9 @@ import com.example.rickandmorty.network.ApiService
 
 class RepositoryImpl(private val apiService: ApiService) : Repository {
     override suspend fun getAllPersons(): List<Person> {
+        val allPages = apiService.getPersons(1).info.pages
         val allPersons = mutableListOf<Person>()
-        for (page in 1..20) {
+        for (page in 1..allPages) {
             allPersons.addAll(apiService.getPersons(page).results)
         }
         return allPersons
@@ -15,7 +16,7 @@ class RepositoryImpl(private val apiService: ApiService) : Repository {
         return try {
             apiService.getPersons(page).results
         } catch (e: Exception) {
-            emptyList() // Return an empty list if an exception occurs
+            emptyList()
         }
     }
 }

@@ -10,15 +10,17 @@ class FilterPersons(private val personList: List<Person>, private val context: C
 
     fun filter(constraint: CharSequence?): List<Person> {
         val filters = getFilters()
-            return when {
-                shouldFilterByFavouriteAndUnknownStatus(filters) -> filterFavouriteByUnknownStatus(constraint)
-                shouldFilterByFavouriteAndDead(filters) -> filterFavouriteByDead(constraint)
-                shouldFilterByFavouriteAndAlive(filters) -> filterFavouriteByAlive(constraint)
-                shouldFilterByUnknownStatus(filters) -> filterByUnknownStatus(constraint)
-                filters.contains(Filters.FAVOURITE) -> filterFavourite(constraint)
-                filters.contains(Filters.DEAD) -> filterByDead(constraint)
-                filters.contains(Filters.ALIVE) -> filterByAlive(constraint)
-                else -> filterByNameOrStatus(constraint)
+        return when {
+            shouldFilterByFavouriteAndUnknownStatus(filters) -> filterFavouriteByUnknownStatus(
+                constraint
+            )
+            shouldFilterByFavouriteAndDead(filters) -> filterFavouriteByDead(constraint)
+            shouldFilterByFavouriteAndAlive(filters) -> filterFavouriteByAlive(constraint)
+            shouldFilterByUnknownStatus(filters) -> filterByUnknownStatus(constraint)
+            filters.contains(Filters.FAVOURITE) -> filterFavourite(constraint)
+            filters.contains(Filters.DEAD) -> filterByDead(constraint)
+            filters.contains(Filters.ALIVE) -> filterByAlive(constraint)
+            else -> filterByNameOrStatus(constraint)
 
         }
     }
@@ -106,7 +108,7 @@ class FilterPersons(private val personList: List<Person>, private val context: C
 
     private fun getFilters(): MutableList<Filters> {
         val filters = context.getSharedPreferences(FILTERS, Context.MODE_PRIVATE)
-            .getStringSet(FILTERS_KEY, null)?.toList()?: mutableListOf()
+            .getStringSet(FILTERS_KEY, null)?.toList() ?: mutableListOf()
         return filters.convertToFilterEnum().toMutableList()
     }
 

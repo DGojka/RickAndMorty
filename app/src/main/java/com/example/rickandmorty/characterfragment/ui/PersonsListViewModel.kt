@@ -45,21 +45,21 @@ class PersonsListViewModel @Inject constructor(
         }
     }
 
-    fun saveSelectedFilters(selectedItems: List<Int>) {
+    fun saveSelectedFilters(selectedItems: List<Int>) =
         filtersManager.saveSelectedFilters(selectedItems)
-    }
 
-    fun getSavedFilters(): MutableSet<String> {
-        return filtersManager.getSavedFilters()?.toMutableSet() ?: mutableSetOf()
-    }
+
+    fun getSavedFilters(): MutableSet<String> =
+        filtersManager.getSavedFilters()?.toMutableSet() ?: mutableSetOf()
+
 
     fun loadMorePersons() {
         viewModelScope.launch {
-            val page = _uiState.value.currentPersonsPage + 1
+            val nextPage = _uiState.value.currentPersonsPage + 1
             val currentPersons = _uiState.value.allFetchedPersons
             _uiState.value = _uiState.value.copy(
-                currentPersonsPage = page,
-                allFetchedPersons = currentPersons + repository.getPersonsByPage(page)
+                currentPersonsPage = nextPage,
+                allFetchedPersons = currentPersons + repository.getPersonsByPage(nextPage)
             )
         }
     }
