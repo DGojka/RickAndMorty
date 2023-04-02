@@ -94,8 +94,15 @@ class PersonsListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
-                adapter.submitList(state.allPersons)
-                adapter.setData(state.allPersons)
+                with(state){
+                    adapter.submitList(allPersons)
+                    adapter.setData(allPersons)
+                    if(isLoading){
+                        _binding!!.loadingBar.visibility = View.VISIBLE
+                    }else{
+                        _binding!!.loadingBar.visibility = View.GONE
+                    }
+                }
             }
         }
     }
