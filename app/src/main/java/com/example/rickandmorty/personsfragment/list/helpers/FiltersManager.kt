@@ -1,4 +1,4 @@
-package com.example.rickandmorty.characterfragment.list.helpers
+package com.example.rickandmorty.personsfragment.list.helpers
 
 import android.content.Context
 class FiltersManager(context: Context) {

@@ -1,12 +1,16 @@
-package com.example.rickandmorty.characterfragment.list.helpers.listfilter
+package com.example.rickandmorty.personsfragment.list.helpers.listfilter
 
 import android.content.Context
-import com.example.rickandmorty.characterfragment.list.helpers.FiltersManager.Companion.FILTERS
-import com.example.rickandmorty.characterfragment.list.helpers.FiltersManager.Companion.FILTERS_KEY
-import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePersons
+import com.example.rickandmorty.personsfragment.list.helpers.FavouritePersonsDb
+import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager.Companion.FILTERS
+import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager.Companion.FILTERS_KEY
 import com.example.rickandmorty.repository.Person
 
-class PersonsFilter(private val personList: List<Person>, private val context: Context) {
+class PersonsFilter(
+    private val personList: List<Person>,
+    private val context: Context,
+    private val favouritePersonsDb: FavouritePersonsDb
+) {
 
     fun filter(constraint: CharSequence?): List<Person> {
         val filters = getFilters()
@@ -41,7 +45,7 @@ class PersonsFilter(private val personList: List<Person>, private val context: C
         filters.contains(Filters.ALIVE) && filters.contains(Filters.DEAD)
 
     private fun filterFavouriteByUnknownStatus(constraint: CharSequence?) =
-        getFavouritePersons(context, personList).filter {
+        favouritePersonsDb.getFavouritePersons(personList).filter {
             it.name.contains(
                 constraint.toString(),
                 ignoreCase = true
@@ -49,7 +53,7 @@ class PersonsFilter(private val personList: List<Person>, private val context: C
         }
 
     private fun filterFavouriteByDead(constraint: CharSequence?) =
-        getFavouritePersons(context, personList).filter {
+        favouritePersonsDb.getFavouritePersons(personList).filter {
             it.name.contains(
                 constraint.toString(),
                 ignoreCase = true
@@ -57,7 +61,7 @@ class PersonsFilter(private val personList: List<Person>, private val context: C
         }
 
     private fun filterFavouriteByAlive(constraint: CharSequence?) =
-        getFavouritePersons(context, personList).filter {
+        favouritePersonsDb.getFavouritePersons(personList).filter {
             it.name.contains(
                 constraint.toString(),
                 ignoreCase = true
@@ -65,7 +69,7 @@ class PersonsFilter(private val personList: List<Person>, private val context: C
         }
 
     private fun filterFavourite(constraint: CharSequence?) =
-        getFavouritePersons(context, personList).filter {
+        favouritePersonsDb.getFavouritePersons(personList).filter {
             it.name.contains(
                 constraint.toString(),
                 ignoreCase = true

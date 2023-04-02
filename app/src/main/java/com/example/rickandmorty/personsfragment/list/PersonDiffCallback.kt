@@ -1,4 +1,4 @@
-package com.example.rickandmorty.characterfragment.list
+package com.example.rickandmorty.personsfragment.list
 
 import androidx.recyclerview.widget.DiffUtil
 import com.example.rickandmorty.repository.Person

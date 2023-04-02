@@ -1,4 +1,4 @@
-package com.example.rickandmorty.characterfragment.ui
+package com.example.rickandmorty.personsfragment.ui
 
 import android.content.Context
 import android.graphics.Color
@@ -11,20 +11,23 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
-import com.example.rickandmorty.characterfragment.list.helpers.FAVOURITE_PERSONS
-import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePersons
-import com.example.rickandmorty.characterfragment.list.helpers.listfilter.PersonsFilter.Companion.ALIVE
-import com.example.rickandmorty.characterfragment.list.helpers.listfilter.PersonsFilter.Companion.DEAD
+import com.example.rickandmorty.personsfragment.list.helpers.FavouritePersonsDb
+import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.ALIVE
+import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.DEAD
 import com.example.rickandmorty.databinding.FragmentMoreDetailsBinding
+import com.example.rickandmorty.personsfragment.list.helpers.FavouritePersonsDb.Companion.FAVOURITE_PERSONS
 import com.example.rickandmorty.repository.Person
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MoreDetailsFragment : Fragment() {
     private var _binding: FragmentMoreDetailsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PersonsListViewModel by activityViewModels()
+    @Inject
+    lateinit var favouritePersonsDb: FavouritePersonsDb
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,7 +60,7 @@ class MoreDetailsFragment : Fragment() {
                         binding.apply {
                             moreInfoCharacterName.text = name
                             moreInfoStatus.text = status
-                            gender.text = String.format(
+                            genderTextView.text = String.format(
                                 resources.getString(R.string.attribute_gender),
                                 gender
                             )
@@ -65,7 +68,7 @@ class MoreDetailsFragment : Fragment() {
                                 resources.getString(R.string.attribute_location),
                                 location.name
                             )
-                            species.text =
+                            speciesTextView.text =
                                 String.format(
                                     resources.getString(R.string.attribute_species),
                                     species
@@ -83,7 +86,7 @@ class MoreDetailsFragment : Fragment() {
                             )
                         }
                         val favPersons =
-                            getFavouritePersons(requireContext(), state.allFetchedPersons)
+                            favouritePersonsDb.getFavouritePersons(state.allFetchedPersons)
 
                         val imageResId =
                             if (favPersons.contains(this)) R.drawable.ic_fav else R.drawable.ic_fav_border

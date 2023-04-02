@@ -1,4 +1,4 @@
-package com.example.rickandmorty.characterfragment.ui
+package com.example.rickandmorty.personsfragment.ui
 
 import com.example.rickandmorty.repository.Person
 

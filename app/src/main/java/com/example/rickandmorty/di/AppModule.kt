@@ -1,7 +1,8 @@
 package com.example.rickandmorty.di
 
 import android.content.Context
-import com.example.rickandmorty.characterfragment.list.helpers.FiltersManager
+import com.example.rickandmorty.personsfragment.list.helpers.FavouritePersonsDb
+import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager
 import com.example.rickandmorty.network.ApiService
 import com.example.rickandmorty.repository.Repository
 import com.example.rickandmorty.repository.RepositoryImpl
@@ -21,12 +22,6 @@ import javax.inject.Singleton
 class AppModule {
     @Provides
     @Singleton
-    fun provideFiltersManager(@ApplicationContext context: Context): FiltersManager {
-        return FiltersManager(context)
-    }
-
-    @Provides
-    @Singleton
     fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder().build()
 
     @Provides
@@ -44,6 +39,18 @@ class AppModule {
     @Provides
     @Singleton
     fun provideRepository(apiService: ApiService): Repository = RepositoryImpl(apiService)
+
+    @Provides
+    @Singleton
+    fun provideFiltersManager(@ApplicationContext context: Context): FiltersManager {
+        return FiltersManager(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavouritePersonsDb(@ApplicationContext context : Context): FavouritePersonsDb{
+        return  FavouritePersonsDb(context)
+    }
 
     companion object {
         private const val BASE_URL = "https://rickandmortyapi.com/api/"

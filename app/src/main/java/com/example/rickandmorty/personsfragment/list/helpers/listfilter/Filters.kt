@@ -1,4 +1,4 @@
-package com.example.rickandmorty.characterfragment.list.helpers.listfilter
+package com.example.rickandmorty.personsfragment.list.helpers.listfilter
 
 enum class Filters {
     FAVOURITE,

@@ -1,10 +1,10 @@
-package com.example.rickandmorty.characterfragment.ui
+package com.example.rickandmorty.personsfragment.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.rickandmorty.R
-import com.example.rickandmorty.characterfragment.list.helpers.FiltersManager
+import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager
 import com.example.rickandmorty.repository.Person
 import com.example.rickandmorty.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel

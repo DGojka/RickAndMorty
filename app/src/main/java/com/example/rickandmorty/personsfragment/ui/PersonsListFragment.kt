@@ -1,4 +1,4 @@
-package com.example.rickandmorty.characterfragment.ui
+package com.example.rickandmorty.personsfragment.ui
 
 import android.app.AlertDialog
 import android.content.Context
@@ -16,29 +16,33 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmorty.R
-import com.example.rickandmorty.characterfragment.list.PersonListAdapter
-import com.example.rickandmorty.characterfragment.list.helpers.listfilter.PersonsFilter.Companion.ALIVE
-import com.example.rickandmorty.characterfragment.list.helpers.listfilter.PersonsFilter.Companion.DEAD
-import com.example.rickandmorty.characterfragment.list.helpers.listfilter.PersonsFilter.Companion.FAVOURITES
-import com.example.rickandmorty.databinding.FragmentCharactersListBinding
+import com.example.rickandmorty.personsfragment.list.PersonListAdapter
+import com.example.rickandmorty.personsfragment.list.helpers.FavouritePersonsDb
+import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.ALIVE
+import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.DEAD
+import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.FAVOURITES
+import com.example.rickandmorty.databinding.FragmentPersonsListBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class PersonsListFragment : Fragment() {
-    private var _binding: FragmentCharactersListBinding? = null
+    private var _binding: FragmentPersonsListBinding? = null
     private val binding get() = _binding
 
     private lateinit var adapter: PersonListAdapter
     private val viewModel: PersonsListViewModel by activityViewModels()
+    @Inject
+    lateinit var favouritePersonsDb: FavouritePersonsDb
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentCharactersListBinding.inflate(inflater, container, false)
-        adapter = PersonListAdapter(requireContext()) { person ->
+        _binding = FragmentPersonsListBinding.inflate(inflater, container, false)
+        adapter = PersonListAdapter(requireContext(),favouritePersonsDb) { person ->
             viewModel.moreDetails(person, findNavController())
         }
         binding?.recyclerView?.adapter = adapter

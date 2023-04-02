@@ -1,4 +1,4 @@
-package com.example.rickandmorty.characterfragment.list
+package com.example.rickandmorty.personsfragment.list
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -9,15 +9,16 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
-import com.example.rickandmorty.characterfragment.list.helpers.FAVOURITE_PERSONS
-import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePersons
-import com.example.rickandmorty.characterfragment.list.helpers.listfilter.PersonsFilter
+import com.example.rickandmorty.personsfragment.list.helpers.FavouritePersonsDb
+import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter
 import com.example.rickandmorty.databinding.ListItemCharacterBinding
+import com.example.rickandmorty.personsfragment.list.helpers.FavouritePersonsDb.Companion.FAVOURITE_PERSONS
 import com.example.rickandmorty.repository.Person
 
 
 class PersonListAdapter(
     private val context: Context,
+    private val favouritePersonsDb: FavouritePersonsDb,
     private val onPersonClick: (Person) -> Unit
 ) :
     ListAdapter<Person, PersonListAdapter.CharacterViewHolder>(
@@ -26,7 +27,8 @@ class PersonListAdapter(
 
     private val allPersons = mutableListOf<Person>()
     private val filteredList = mutableListOf<Person>()
-    private var personsFilter: PersonsFilter = PersonsFilter(emptyList(), context)
+    private var personsFilter: PersonsFilter =
+        PersonsFilter(emptyList(), context, favouritePersonsDb)
 
     inner class CharacterViewHolder(private val binding: ListItemCharacterBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -39,7 +41,8 @@ class PersonListAdapter(
                     .placeholder(R.drawable.placeholder)
                     .into(binding.characterImage)
 
-                val isFavourite = getFavouritePersons(context, allPersons).contains(person)
+                val isFavourite =
+                    favouritePersonsDb.getFavouritePersons(allPersons).contains(person)
                 favouriteButton.setImageResource(if (isFavourite) R.drawable.ic_fav else R.drawable.ic_fav_border)
                 favouriteButton.setOnClickListener {
                     handleFavouriteButtonClick(binding, person)
@@ -51,7 +54,7 @@ class PersonListAdapter(
             val editor =
                 itemView.context.getSharedPreferences(FAVOURITE_PERSONS, Context.MODE_PRIVATE)
                     .edit()
-            val favPersons = getFavouritePersons(context, allPersons)
+            val favPersons = favouritePersonsDb.getFavouritePersons(allPersons)
             val isFavourite = favPersons.contains(person)
 
             if (isFavourite) {
@@ -72,7 +75,7 @@ class PersonListAdapter(
             clear()
             addAll(data)
         }
-        personsFilter = PersonsFilter(allPersons, context)
+        personsFilter = PersonsFilter(allPersons, context,favouritePersonsDb)
         filteredList.apply {
             clear()
             addAll(personsFilter.filter(""))

@@ -76,7 +76,7 @@
             android:padding="12dp">
 
             <TextView
-                android:id="@+id/species"
+                android:id="@+id/species_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -85,12 +85,12 @@
                 tools:text="Species: Human" />
 
             <TextView
-                android:id="@+id/gender"
+                android:id="@+id/gender_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/species"
+                app:layout_constraintTop_toBottomOf="@id/species_text_view"
                 tools:text="Gender: Male" />
 
             <TextView
@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/gender"
+                app:layout_constraintTop_toBottomOf="@id/gender_text_view"
                 tools:text="Origin: Earth" />
 
             <TextView
