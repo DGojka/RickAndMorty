@@ -98,6 +98,8 @@ class PersonListAdapter(
 
     override fun getItemCount() = filteredList.size
 
+    fun getAllItemsCount() = allPersons.size
+
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {

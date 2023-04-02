@@ -67,9 +67,8 @@ class PersonsListFragment : Fragment() {
 
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-                val totalItemCount = layoutManager.itemCount
 
-                if (lastVisibleItemPosition == totalItemCount - 1) {
+                if (lastVisibleItemPosition == adapter.getAllItemsCount() - 1) {
                    viewModel.loadMorePersons()
                 }
             }
