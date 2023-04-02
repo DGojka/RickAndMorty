@@ -1,6 +1,9 @@
 package com.example.rickandmorty.characterfragment.ui
 
 import android.app.AlertDialog
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,6 +19,7 @@ import com.example.rickandmorty.R
 import com.example.rickandmorty.characterfragment.list.PersonListAdapter
 import com.example.rickandmorty.characterfragment.list.helpers.listfilter.Filters
 import com.example.rickandmorty.databinding.FragmentCharactersListBinding
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 
@@ -110,18 +114,30 @@ class PersonsListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect { state ->
-                with(state){
-                    adapter.submitList(allFetchedPersons)
-                    adapter.setData(allFetchedPersons)
-                    if(isLoading){
-                        _binding!!.loadingBar.visibility = View.VISIBLE
-                    }else{
-                        _binding!!.loadingBar.visibility = View.GONE
+            if (isNetworkAvailable(requireContext())) {
+                viewModel.uiState.collect { state ->
+                    with(state){
+                        adapter.submitList(allFetchedPersons)
+                        adapter.setData(allFetchedPersons)
+                        if(isLoading){
+                            _binding!!.loadingBar.visibility = View.VISIBLE
+                        }else{
+                            _binding!!.loadingBar.visibility = View.GONE
+                        }
                     }
                 }
+            }else{
+                Snackbar.make(view, R.string.no_internet, Snackbar.LENGTH_LONG).show()
             }
+
         }
+    }
+
+    fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     override fun onDestroyView() {

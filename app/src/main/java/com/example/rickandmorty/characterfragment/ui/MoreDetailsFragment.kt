@@ -65,7 +65,13 @@ class MoreDetailsFragment : Fragment() {
                             resources.getString(R.string.attribute_origin),
                             origin.name
                         )
-                        binding.moreInfoStatus.setTextColor(if (status == ALIVE) Color.GREEN else if (status == DEAD) Color.RED else Color.LTGRAY)
+                        binding.moreInfoStatus.setTextColor(
+                            when (status) {
+                                ALIVE -> Color.GREEN
+                                DEAD -> Color.RED
+                                else -> Color.LTGRAY
+                            }
+                        )
                     }
                 }
             }
