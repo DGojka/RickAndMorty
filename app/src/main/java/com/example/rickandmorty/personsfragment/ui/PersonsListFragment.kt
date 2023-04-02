@@ -5,23 +5,23 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmorty.R
-import com.example.rickandmorty.personsfragment.list.PersonListAdapter
+import com.example.rickandmorty.databinding.FragmentPersonsListBinding
 import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
+import com.example.rickandmorty.personsfragment.list.PersonListAdapter
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.ALIVE
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.DEAD
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.FAVOURITES
-import com.example.rickandmorty.databinding.FragmentPersonsListBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -34,6 +34,7 @@ class PersonsListFragment : Fragment() {
 
     private lateinit var adapter: PersonListAdapter
     private val viewModel: PersonsListViewModel by activityViewModels()
+
     @Inject
     lateinit var favouritePersonsDb: FavouritePersonsDb
 
@@ -42,11 +43,12 @@ class PersonsListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentPersonsListBinding.inflate(inflater, container, false)
-        adapter = PersonListAdapter(requireContext(),favouritePersonsDb) { person ->
+        adapter = PersonListAdapter(requireContext(), favouritePersonsDb) { person ->
             viewModel.moreDetails(person, findNavController())
         }
         binding?.recyclerView?.adapter = adapter
-        _binding?.searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
+        binding?.searchView?.setOnClickListener { _binding?.searchView?.isIconified = false }
+        binding?.searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
             androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -69,7 +71,7 @@ class PersonsListFragment : Fragment() {
                 val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 
                 if (lastVisibleItemPosition == adapter.getAllItemsCount() - 1) {
-                   viewModel.loadMorePersons()
+                    viewModel.loadMorePersons()
                 }
             }
         })
@@ -106,9 +108,9 @@ class PersonsListFragment : Fragment() {
         builder.setPositiveButton(R.string.apply_filters) { _, _ ->
             viewModel.saveSelectedFilters(selectedItems)
             adapter.applyFilters()
-            if(adapter.itemCount == 0){
+            if (adapter.itemCount == 0) {
                 binding?.noPersonOnList?.visibility = View.VISIBLE
-            }else{
+            } else {
                 binding?.noPersonOnList?.visibility = View.GONE
             }
         }
@@ -126,17 +128,17 @@ class PersonsListFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             if (isNetworkAvailable(requireContext())) {
                 viewModel.uiState.collect { state ->
-                    with(state){
+                    with(state) {
                         adapter.submitList(allFetchedPersons)
                         adapter.setData(allFetchedPersons)
-                        if(isLoading){
+                        if (isLoading) {
                             _binding!!.loadingBar.visibility = View.VISIBLE
-                        }else{
+                        } else {
                             _binding!!.loadingBar.visibility = View.GONE
                         }
                     }
                 }
-            }else{
+            } else {
                 Snackbar.make(view, R.string.no_internet, Snackbar.LENGTH_LONG).show()
             }
 
@@ -144,7 +146,8 @@ class PersonsListFragment : Fragment() {
     }
 
     private fun isNetworkAvailable(context: Context): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork
         val capabilities = connectivityManager.getNetworkCapabilities(network)
         return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
