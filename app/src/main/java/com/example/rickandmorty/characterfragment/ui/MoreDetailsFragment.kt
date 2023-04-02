@@ -54,28 +54,34 @@ class MoreDetailsFragment : Fragment() {
                             .load(image)
                             .placeholder(R.drawable.placeholder)
                             .into(binding.moreInfoImage)
-                        binding.moreInfoCharacterName.text = name
-                        binding.moreInfoStatus.text = status
-
-                        binding.gender.text =
-                            String.format(resources.getString(R.string.attribute_gender), gender)
-                        binding.locationName.text = String.format(
-                            resources.getString(R.string.attribute_location),
-                            location.name
-                        )
-                        binding.species.text =
-                            String.format(resources.getString(R.string.attribute_species), species)
-                        binding.origin.text = String.format(
-                            resources.getString(R.string.attribute_origin),
-                            origin.name
-                        )
-                        binding.moreInfoStatus.setTextColor(
-                            when (status) {
-                                ALIVE -> Color.GREEN
-                                DEAD -> Color.RED
-                                else -> Color.LTGRAY
-                            }
-                        )
+                        binding.apply {
+                            moreInfoCharacterName.text = name
+                            moreInfoStatus.text = status
+                            gender.text = String.format(
+                                resources.getString(R.string.attribute_gender),
+                                gender
+                            )
+                            locationName.text = String.format(
+                                resources.getString(R.string.attribute_location),
+                                location.name
+                            )
+                            species.text =
+                                String.format(
+                                    resources.getString(R.string.attribute_species),
+                                    species
+                                )
+                            originTextview.text = String.format(
+                                resources.getString(R.string.attribute_origin),
+                                origin.name
+                            )
+                            moreInfoStatus.setTextColor(
+                                when (status) {
+                                    ALIVE -> Color.GREEN
+                                    DEAD -> Color.RED
+                                    else -> Color.LTGRAY
+                                }
+                            )
+                        }
                         val favPersons =
                             getFavouritePersons(requireContext(), state.allFetchedPersons)
 
@@ -83,7 +89,7 @@ class MoreDetailsFragment : Fragment() {
                             if (favPersons.contains(this)) R.drawable.ic_fav else R.drawable.ic_fav_border
                         binding.favouriteButton.setImageResource(imageResId)
                         binding.favouriteButton.setOnClickListener {
-                            handleFavouriteButtonOnClick(view, this,favPersons)
+                            handleFavouriteButtonOnClick(view, this, favPersons)
                         }
                     }
                 }
@@ -91,7 +97,11 @@ class MoreDetailsFragment : Fragment() {
         }
     }
 
-    private fun handleFavouriteButtonOnClick(view: View, person: Person, favPersons : MutableList<Person>) {
+    private fun handleFavouriteButtonOnClick(
+        view: View,
+        person: Person,
+        favPersons: MutableList<Person>
+    ) {
         val editor =
             view.context.getSharedPreferences(
                 FAVOURITE_PERSONS,
