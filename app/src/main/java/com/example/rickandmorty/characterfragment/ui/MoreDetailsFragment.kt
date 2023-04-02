@@ -1,5 +1,6 @@
 package com.example.rickandmorty.characterfragment.ui
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,9 +11,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
+import com.example.rickandmorty.characterfragment.list.helpers.FAVOURITE_PERSONS
+import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePersons
 import com.example.rickandmorty.characterfragment.list.helpers.listfilter.FilterPersons.Companion.ALIVE
 import com.example.rickandmorty.characterfragment.list.helpers.listfilter.FilterPersons.Companion.DEAD
 import com.example.rickandmorty.databinding.FragmentMoreDetailsBinding
+import com.example.rickandmorty.repository.Person
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -72,9 +76,40 @@ class MoreDetailsFragment : Fragment() {
                                 else -> Color.LTGRAY
                             }
                         )
+                        val favPersons =
+                            getFavouritePersons(requireContext(), state.allFetchedPersons)
+
+                        val imageResId =
+                            if (favPersons.contains(this)) R.drawable.ic_fav else R.drawable.ic_fav_border
+                        binding.favouriteButton.setImageResource(imageResId)
+                        binding.favouriteButton.setOnClickListener {
+                            handleFavouriteButtonOnClick(view, this,favPersons)
+                        }
                     }
                 }
             }
         }
+    }
+
+    private fun handleFavouriteButtonOnClick(view: View, person: Person, favPersons : MutableList<Person>) {
+        val editor =
+            view.context.getSharedPreferences(
+                FAVOURITE_PERSONS,
+                Context.MODE_PRIVATE
+            )
+                .edit()
+        if (favPersons.contains(person)) {
+            favPersons.remove(person)
+            binding.favouriteButton.setImageResource(R.drawable.ic_fav_border)
+        } else {
+            favPersons.add(person)
+            binding.favouriteButton.setImageResource(R.drawable.ic_fav)
+        }
+
+        editor.putStringSet(
+            FAVOURITE_PERSONS,
+            favPersons.map { it.name }.toSet()
+        )
+        editor.apply()
     }
 }

@@ -13,7 +13,6 @@ data class Person(
     val episode: List<String>,
     val url : String,
     val created: String,
-    val isFavourite: Boolean
 ){
     data class Location(
         val name: String,

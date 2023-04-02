@@ -15,6 +15,19 @@
         android:contentDescription="@string/persons_image"
         tools:src="@drawable/placeholder" />
 
+    <ImageButton
+        android:id="@+id/favourite_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@null"
+        android:src="@drawable/ic_fav_border"
+        android:contentDescription="@string/favourite_icon"
+        />
+
     <TextView
         android:id="@+id/more_info_character_name"
         android:layout_width="wrap_content"
