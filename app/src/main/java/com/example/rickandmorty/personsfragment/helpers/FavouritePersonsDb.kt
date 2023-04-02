@@ -11,9 +11,7 @@ class FavouritePersonsDb(val context: Context) {
             ?: mutableListOf()
 
     fun saveCurrentFavPersonsList(favPersons: List<Person>){
-        val editor =
-            context.getSharedPreferences(FAVOURITE_PERSONS, Context.MODE_PRIVATE)
-                .edit()
+        val editor = prefs.edit()
         editor.putStringSet(FAVOURITE_PERSONS, favPersons.map { it.name }.toSet())
         editor.apply()
     }
