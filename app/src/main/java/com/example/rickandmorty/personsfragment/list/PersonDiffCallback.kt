@@ -1,9 +1,9 @@
-package com.example.rickandmorty.characterfragment.list
+package com.example.rickandmorty.personsfragment.list
 
 import androidx.recyclerview.widget.DiffUtil
-import com.example.rickandmorty.network.Person
+import com.example.rickandmorty.repository.Person
 
-class CharacterDiffCallback : DiffUtil.ItemCallback<Person>() {
+class PersonDiffCallback : DiffUtil.ItemCallback<Person>() {
 
     override fun areItemsTheSame(
         oldItem: Person,

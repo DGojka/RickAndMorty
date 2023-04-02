@@ -1,11 +1,12 @@
 package com.example.rickandmorty.network
 
+import com.example.rickandmorty.repository.Person
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface CharacterApiService {
+interface ApiService {
     @GET("character")
-    suspend fun getCharacters(@Query("page") page: Int? = null): ApiResponse<Person>
+    suspend fun getPersons(@Query("page") page: Int? = null): ApiResponse<Person>
 }
 
 

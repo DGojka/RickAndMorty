@@ -7,8 +7,8 @@
 
     <fragment
         android:id="@+id/charactersFragment"
-        android:name="com.example.rickandmorty.characterfragment.PersonsListFragment"
-        tools:layout="@layout/fragment_characters_list">
+        android:name="com.example.rickandmorty.personsfragment.ui.PersonsListFragment"
+        tools:layout="@layout/fragment_persons_list">
         <action
             android:id="@+id/action_to_more_details_fragment"
             app:destination="@id/moreDetailsFragment" />
@@ -16,7 +16,7 @@
 
     <fragment
         android:id="@+id/moreDetailsFragment"
-        android:name="com.example.rickandmorty.characterfragment.MoreDetailsFragment">
+        android:name="com.example.rickandmorty.personsfragment.ui.MoreDetailsFragment">
         <action
             android:id="@+id/action_to_personsFragment"
             app:destination="@id/charactersFragment" />

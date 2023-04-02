@@ -10,9 +10,22 @@
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_margin="12dp"
+        android:contentDescription="@string/persons_image"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/placeholder" />
+
+    <ImageButton
+        android:id="@+id/favourite_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@null"
+        android:contentDescription="@string/favourite_icon"
+        android:src="@drawable/ic_fav_border"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/more_info_character_name"
@@ -20,6 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/more_info_image"
         app:layout_constraintLeft_toRightOf="@id/more_info_image"
         app:layout_constraintRight_toRightOf="parent"
@@ -27,6 +41,7 @@
         tools:text="Rick Sanchez" />
 
     <TextView
+        android:textStyle="bold"
         android:id="@+id/more_info_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -62,7 +77,7 @@
             android:padding="12dp">
 
             <TextView
-                android:id="@+id/species"
+                android:id="@+id/species_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -71,21 +86,21 @@
                 tools:text="Species: Human" />
 
             <TextView
-                android:id="@+id/gender"
+                android:id="@+id/gender_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/species"
+                app:layout_constraintTop_toBottomOf="@id/species_text_view"
                 tools:text="Gender: Male" />
 
             <TextView
-                android:id="@+id/origin"
+                android:id="@+id/origin_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/gender"
+                app:layout_constraintTop_toBottomOf="@id/gender_text_view"
                 tools:text="Origin: Earth" />
 
             <TextView
@@ -94,17 +109,8 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/origin"
+                app:layout_constraintTop_toBottomOf="@id/origin_textview"
                 tools:text="Location: Earth" />
-
-            <TextView
-                android:id="@+id/dimension"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/locationName"
-                tools:text="Dimension: Dimension C-137" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

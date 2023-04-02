@@ -4,4 +4,13 @@
     <string name="attribute_location">Location: %1$s</string>
     <string name="attribute_species">Species: %1$s</string>
     <string name="attribute_origin">Origin: %1$s</string>
+    <string name="select_filters">Select filter options</string>
+    <string name="apply_filters">Apply filters</string>
+    <string name="name">Name</string>
+    <string name="persons_image">Image of an person</string>
+    <string name="favourite_icon">Favourite icon</string>
+    <string name="button_manage_filters">Manage filters</string>
+    <string name="no_internet">No internet connection! Please try again.</string>
+    <string name="manage_filters_image_desc">Manage filters 3 dots image</string>
+    <string name="no_persons_with_filter">There are no persons with applied filters</string>
 </resources>

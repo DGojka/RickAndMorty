@@ -1,4 +1,4 @@
-package com.example.rickandmorty.network
+package com.example.rickandmorty.repository
 
 data class Person(
     val id: Int,
@@ -12,10 +12,10 @@ data class Person(
     val image: String,
     val episode: List<String>,
     val url : String,
-    val created: String
-)
-
-data class Location(
-    val name: String,
-    val url: String
-)
+    val created: String,
+){
+    data class Location(
+        val name: String,
+        val url: String
+    )
+}
