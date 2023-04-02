@@ -1,10 +1,10 @@
 package com.example.rickandmorty.characterfragment.ui
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.rickandmorty.R
+import com.example.rickandmorty.characterfragment.list.helpers.FiltersManager
 import com.example.rickandmorty.network.CharacterNetwork
 import com.example.rickandmorty.network.Person
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PersonsListViewModel @Inject constructor() : ViewModel() {
+class PersonsListViewModel @Inject constructor(val filtersManager: FiltersManager) : ViewModel() {
     private val _uiState = MutableStateFlow(
         PersonsListUiState(
             true,
@@ -37,30 +37,23 @@ class PersonsListViewModel @Inject constructor() : ViewModel() {
             _uiState.value = _uiState.value.copy(
                 clickedPerson = person
             )
-            findNavController.navigate(R.id.action_to_more_details_fragment)
+            findNavController.navigate(R.id.action_to_more_details_fragment) //move this to personslistfragment
         }
     }
 
-  /*  fun getClickedPerson(): Person {
-        val moreDetailsState = _uiState.value as PersonsListUiState.MoreDetails
-        return moreDetailsState.person
-    }*/
-
-    fun onBackClick() {
-    //    emitAllPersonsList()
-    }
-
-    fun saveSelectedFilters(context: Context, selectedItems: List<Int>) {
-        val prefs = context.getSharedPreferences("Filters", Context.MODE_PRIVATE)
+    fun saveSelectedFilters(selectedItems: List<Int>) {
+     /*   val prefs = context.getSharedPreferences("Filters", Context.MODE_PRIVATE)
         val editor = prefs.edit()
         val selectedSet = selectedItems.map { it.toString() }.toSet()
         editor.putStringSet("SelectedItems", selectedSet)
-        editor.apply()
+        editor.apply()*/
+        filtersManager.saveSelectedFilters(selectedItems)
     }
 
-    fun getSavedFilters(context: Context): MutableSet<String>? {
-        val prefs = context.getSharedPreferences("Filters", Context.MODE_PRIVATE)
-        return prefs.getStringSet("SelectedItems", null)
+    fun getSavedFilters(): Set<String> {
+      /*  val prefs = context.getSharedPreferences("Filters", Context.MODE_PRIVATE)
+        return prefs.getStringSet("SelectedItems", null)*/
+        return filtersManager.getSelectedFilters()?: setOf()
     }
 
 /*    private fun emitAllPersonsList() {
