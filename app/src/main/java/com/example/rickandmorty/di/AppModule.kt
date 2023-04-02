@@ -1,7 +1,7 @@
 package com.example.rickandmorty.di
 
 import android.content.Context
-import com.example.rickandmorty.personsfragment.list.helpers.FavouritePersonsDb
+import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
 import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager
 import com.example.rickandmorty.network.ApiService
 import com.example.rickandmorty.repository.Repository
@@ -48,7 +48,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideFavouritePersonsDb(@ApplicationContext context : Context): FavouritePersonsDb{
+    fun provideFavouritePersonsDb(@ApplicationContext context : Context): FavouritePersonsDb {
         return  FavouritePersonsDb(context)
     }
 

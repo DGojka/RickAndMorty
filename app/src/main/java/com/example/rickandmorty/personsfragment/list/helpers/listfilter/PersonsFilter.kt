@@ -1,7 +1,7 @@
 package com.example.rickandmorty.personsfragment.list.helpers.listfilter
 
 import android.content.Context
-import com.example.rickandmorty.personsfragment.list.helpers.FavouritePersonsDb
+import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
 import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager.Companion.FILTERS
 import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager.Companion.FILTERS_KEY
 import com.example.rickandmorty.repository.Person

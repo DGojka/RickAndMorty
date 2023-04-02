@@ -9,10 +9,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
-import com.example.rickandmorty.personsfragment.list.helpers.FavouritePersonsDb
+import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter
 import com.example.rickandmorty.databinding.ListItemCharacterBinding
-import com.example.rickandmorty.personsfragment.list.helpers.FavouritePersonsDb.Companion.FAVOURITE_PERSONS
 import com.example.rickandmorty.repository.Person
 
 
@@ -51,9 +50,6 @@ class PersonListAdapter(
         }
 
         private fun handleFavouriteButtonClick(binding: ListItemCharacterBinding, person: Person) {
-            val editor =
-                itemView.context.getSharedPreferences(FAVOURITE_PERSONS, Context.MODE_PRIVATE)
-                    .edit()
             val favPersons = favouritePersonsDb.getFavouritePersons(allPersons)
             val isFavourite = favPersons.contains(person)
 
@@ -64,9 +60,7 @@ class PersonListAdapter(
                 favPersons.add(person)
                 binding.favouriteButton.setImageResource(R.drawable.ic_fav)
             }
-
-            editor.putStringSet(FAVOURITE_PERSONS, favPersons.map { it.name }.toSet())
-            editor.apply()
+            favouritePersonsDb.saveCurrentFavPersonsList(favPersons)
         }
     }
 
