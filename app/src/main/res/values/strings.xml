@@ -12,4 +12,5 @@
     <string name="button_manage_filters">Manage filters</string>
     <string name="no_internet">No internet connection! Please try again.</string>
     <string name="manage_filters_image_desc">Manage filters 3 dots image</string>
+    <string name="no_persons_with_filter">There are no persons with applied filters</string>
 </resources>

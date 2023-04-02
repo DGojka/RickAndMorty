@@ -103,6 +103,11 @@ class PersonsListFragment : Fragment() {
         builder.setPositiveButton(R.string.apply_filters) { _, _ ->
             viewModel.saveSelectedFilters(selectedItems)
             adapter.applyFilters()
+            if(adapter.itemCount == 0){
+                binding?.noPersonOnList?.visibility = View.VISIBLE
+            }else{
+                binding?.noPersonOnList?.visibility = View.GONE
+            }
         }
         val dialog = builder.create()
         dialog.setOnShowListener {

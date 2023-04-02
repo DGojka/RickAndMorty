@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".characterfragment.ui.PersonsListFragment">
 
+    <TextView
+        android:id="@+id/no_person_on_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_persons_with_filter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        />
+
     <ProgressBar
         android:id="@+id/loading_bar"
         style="@style/Widget.AppCompat.ProgressBar"
