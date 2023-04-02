@@ -1,7 +1,7 @@
 package com.example.rickandmorty.characterfragment.list.helpers
 
 import android.content.Context
-import com.example.rickandmorty.network.Person
+import com.example.rickandmorty.repository.Person
 
 fun getFavouritePersons(context: Context, personsList: List<Person>): MutableList<Person> {
     val prefs = context.getSharedPreferences("asd", Context.MODE_PRIVATE)

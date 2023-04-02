@@ -12,7 +12,7 @@ import com.example.rickandmorty.R
 import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePersons
 import com.example.rickandmorty.characterfragment.list.helpers.listfilter.FilterPersons
 import com.example.rickandmorty.databinding.ListItemCharacterBinding
-import com.example.rickandmorty.network.Person
+import com.example.rickandmorty.repository.Person
 
 
 class CharacterListAdapter(
@@ -115,8 +115,4 @@ class CharacterListAdapter(
         filteredList.addAll(filterPersons.filter(""))
         notifyDataSetChanged()
     }
-
-    /*         filteredList.clear()
-                        filteredList.addAll(filterPersons.filter(""))
-                        notifyDataSetChanged()*/
 }

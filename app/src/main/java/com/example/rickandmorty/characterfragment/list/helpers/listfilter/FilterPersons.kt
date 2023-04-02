@@ -2,7 +2,7 @@ package com.example.rickandmorty.characterfragment.list.helpers.listfilter
 
 import android.content.Context
 import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePersons
-import com.example.rickandmorty.network.Person
+import com.example.rickandmorty.repository.Person
 
 class FilterPersons(private val personList: List<Person>, private val context: Context) {
     fun filter(constraint: CharSequence?): List<Person> {

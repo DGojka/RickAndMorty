@@ -1,7 +1,7 @@
 package com.example.rickandmorty.characterfragment.list
 
 import androidx.recyclerview.widget.DiffUtil
-import com.example.rickandmorty.network.Person
+import com.example.rickandmorty.repository.Person
 
 class CharacterDiffCallback : DiffUtil.ItemCallback<Person>() {
 

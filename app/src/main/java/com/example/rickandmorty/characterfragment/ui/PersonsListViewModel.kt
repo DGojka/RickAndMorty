@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.rickandmorty.R
 import com.example.rickandmorty.characterfragment.list.helpers.FiltersManager
-import com.example.rickandmorty.network.CharacterNetwork
-import com.example.rickandmorty.network.Person
+import com.example.rickandmorty.repository.Person
+import com.example.rickandmorty.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +14,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PersonsListViewModel @Inject constructor(private val filtersManager: FiltersManager) :
+class PersonsListViewModel @Inject constructor(
+    private val filtersManager: FiltersManager,
+    private val repository: Repository
+) :
     ViewModel() {
     private val _uiState = MutableStateFlow(
         PersonsListUiState(
@@ -28,7 +31,7 @@ class PersonsListViewModel @Inject constructor(private val filtersManager: Filte
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
-                allPersons = CharacterNetwork.getAllCharacters()
+                allPersons = repository.getAllPersons()
             )
         }
     }

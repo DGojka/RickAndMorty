@@ -1,6 +1,6 @@
 package com.example.rickandmorty.characterfragment.ui
 
-import com.example.rickandmorty.network.Person
+import com.example.rickandmorty.repository.Person
 
 data class PersonsListUiState(
     val isLoading: Boolean,
