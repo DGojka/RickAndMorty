@@ -2,7 +2,6 @@ package com.example.rickandmorty.characterfragment.ui
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +10,9 @@ import android.widget.SearchView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.rickandmorty.R
 import com.example.rickandmorty.characterfragment.list.CharacterListAdapter
+import com.example.rickandmorty.characterfragment.list.helpers.listfilter.Filters
 import com.example.rickandmorty.databinding.FragmentCharactersListBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -45,68 +46,49 @@ class PersonsListFragment : Fragment() {
             }
         })
         binding?.manageFiltersButton?.setOnClickListener {
-            val options = arrayOf("favourites", "Dead", "Alive")
-            val selectedItems = ArrayList<Int>()
-            viewModel.getSavedFilters().let {
-                for (i in it) {
-                    selectedItems.add(i.toInt())
-                }
-            }
-
-            val builder = AlertDialog.Builder(requireContext())
-            builder.setTitle("Select Options")
-            builder.setMultiChoiceItems(options, null) { _, which, isChecked ->
-                if (isChecked) {
-                    selectedItems.add(which)
-                } else if (selectedItems.contains(which)) {
-                    selectedItems.remove(Integer.valueOf(which))
-                }
-            }
-
-            builder.setPositiveButton("OK") { _, _ ->
-                val selectedFilterOptions = mutableListOf<String>()
-                for (i in selectedItems.indices) {
-                    Log.d("TAG", options[selectedItems[i]])
-                    selectedFilterOptions.add(options[selectedItems[i]])
-                }
-                viewModel.saveSelectedFilters(selectedItems)
-                adapter.applyFilters()
-            }
-
-            val dialog = builder.create()
-            dialog.setOnShowListener {
-                for (i in selectedItems) {
-                    dialog.listView.setItemChecked(i, true)
-                }
-            }
-            dialog.show()
+            showFiltersDialog()
         }
         return binding?.root
     }
 
- /*   private fun showFiltersDialog() {
-        val options = arrayOf("favourites", "Dead", "Alive")
-        val selectedItems = getSelectedItemsFromStorage()
+    private fun getCurrentFilters(): ArrayList<Int> {
+        val selectedItems = ArrayList<Int>()
+        viewModel.getSavedFilters().let {
+            for (i in it) {
+                selectedItems.add(i.toInt())
+            }
+        }
+        return selectedItems
+    }
+
+    private fun showFiltersDialog() {
+        val options = arrayOf(
+            Filters.FAVOURITE.toString(),
+            Filters.DEAD.toString(),
+            Filters.ALIVE.toString()
+        )
+        val selectedItems = getCurrentFilters()
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Select Options")
-        builder.setMultiChoiceItems(
-            options,
-            getCheckedItems(selectedItems)
-        ) { _, which, isChecked ->
+        builder.setTitle(R.string.select_filters)
+        builder.setMultiChoiceItems(options, null) { _, which, isChecked ->
             if (isChecked) {
                 selectedItems.add(which)
             } else if (selectedItems.contains(which)) {
-                selectedItems.remove(which)
+                selectedItems.remove(Integer.valueOf(which))
             }
         }
-        builder.setPositiveButton("OK") { _, _ ->
-          //  saveSelectedItemsToStorage(selectedItems)
+        builder.setPositiveButton(R.string.apply_filters) { _, _ ->
+            viewModel.saveSelectedFilters(selectedItems)
             adapter.applyFilters()
         }
         val dialog = builder.create()
+        dialog.setOnShowListener {
+            for (i in selectedItems) {
+                dialog.listView.setItemChecked(i, true)
+            }
+        }
         dialog.show()
-        setCheckedItems(dialog, selectedItems)
-    }*/
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -114,9 +96,6 @@ class PersonsListFragment : Fragment() {
             viewModel.uiState.collect { state ->
                 adapter.submitList(state.allPersons)
                 adapter.setData(state.allPersons)
-               /* if(state.clickedPerson!=null){
-                    findNavController().navigate(R.id.action_to_more_details_fragment)
-                }*/
             }
         }
     }

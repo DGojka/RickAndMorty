@@ -14,7 +14,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PersonsListViewModel @Inject constructor(val filtersManager: FiltersManager) : ViewModel() {
+class PersonsListViewModel @Inject constructor(private val filtersManager: FiltersManager) :
+    ViewModel() {
     private val _uiState = MutableStateFlow(
         PersonsListUiState(
             true,
@@ -42,23 +43,10 @@ class PersonsListViewModel @Inject constructor(val filtersManager: FiltersManage
     }
 
     fun saveSelectedFilters(selectedItems: List<Int>) {
-     /*   val prefs = context.getSharedPreferences("Filters", Context.MODE_PRIVATE)
-        val editor = prefs.edit()
-        val selectedSet = selectedItems.map { it.toString() }.toSet()
-        editor.putStringSet("SelectedItems", selectedSet)
-        editor.apply()*/
         filtersManager.saveSelectedFilters(selectedItems)
     }
 
-    fun getSavedFilters(): Set<String> {
-      /*  val prefs = context.getSharedPreferences("Filters", Context.MODE_PRIVATE)
-        return prefs.getStringSet("SelectedItems", null)*/
-        return filtersManager.getSelectedFilters()?: setOf()
+    fun getSavedFilters(): MutableSet<String> {
+        return filtersManager.getSelectedFilters()?.toMutableSet() ?: mutableSetOf()
     }
-
-/*    private fun emitAllPersonsList() {
-        viewModelScope.launch {
-            _uiState.emit(PersonsListUiState.Loaded(CharacterNetwork.getAllCharacters()))
-        }
-    }*/
 }

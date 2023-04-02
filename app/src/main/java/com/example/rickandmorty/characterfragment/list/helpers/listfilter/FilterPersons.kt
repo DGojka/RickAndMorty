@@ -9,9 +9,10 @@ class FilterPersons(private val personList: List<Person>, private val context: C
         val filters = getFilters()
         if (filters != null) {
             return when {
-                shouldFilterByFavouriteAndStatus(filters) -> filterFavouriteByStatus(constraint)
+                shouldFilterByFavouriteAndUnknownStatus(filters) -> filterFavouriteByUnknownStatus(constraint)
                 shouldFilterByFavouriteAndDead(filters) -> filterFavouriteByDead(constraint)
                 shouldFilterByFavouriteAndAlive(filters) -> filterFavouriteByAlive(constraint)
+                shouldFilterByUnknownStatus(filters) -> filterByUnknownStatus(constraint)
                 filters.contains(Filters.FAVOURITE) -> filterFavourite(constraint)
                 filters.contains(Filters.DEAD) -> filterByDead(constraint)
                 filters.contains(Filters.ALIVE) -> filterByAlive(constraint)
@@ -22,7 +23,7 @@ class FilterPersons(private val personList: List<Person>, private val context: C
     }
 
 
-    private fun shouldFilterByFavouriteAndStatus(filters: List<Filters>) =
+    private fun shouldFilterByFavouriteAndUnknownStatus(filters: List<Filters>) =
         filters.contains(Filters.FAVOURITE) && filters.contains(Filters.ALIVE) && filters.contains(
             Filters.DEAD
         )
@@ -33,7 +34,11 @@ class FilterPersons(private val personList: List<Person>, private val context: C
     private fun shouldFilterByFavouriteAndAlive(filters: List<Filters>) =
         filters.contains(Filters.FAVOURITE) && filters.contains(Filters.ALIVE)
 
-    private fun filterFavouriteByStatus(constraint: CharSequence?) =
+
+    private fun shouldFilterByUnknownStatus(filters: List<Filters>) =
+        filters.contains(Filters.ALIVE) && filters.contains(Filters.DEAD)
+
+    private fun filterFavouriteByUnknownStatus(constraint: CharSequence?) =
         getFavouritePersons(context, personList).filter {
             it.name.contains(
                 constraint.toString(),
@@ -63,6 +68,15 @@ class FilterPersons(private val personList: List<Person>, private val context: C
                 constraint.toString(),
                 ignoreCase = true
             ) || it.status.contains(constraint.toString(), ignoreCase = true)
+        }
+
+    private fun filterByUnknownStatus(constraint: CharSequence?) =
+        personList.filter {
+            it.name.contains(
+                constraint.toString(),
+                ignoreCase = true
+            ) && it.status == UNKNOWN
+
         }
 
     private fun filterByDead(constraint: CharSequence?) =
@@ -104,6 +118,7 @@ class FilterPersons(private val personList: List<Person>, private val context: C
             }
         }
     }
+
     companion object {
         const val FAVOURITES = "favourites"
         const val ALIVE = "Alive"
