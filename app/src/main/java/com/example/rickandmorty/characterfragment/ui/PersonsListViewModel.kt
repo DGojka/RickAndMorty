@@ -54,10 +54,14 @@ class PersonsListViewModel @Inject constructor(
 
 
     fun loadMorePersons() {
+        _uiState.value = _uiState.value.copy(
+            isLoading = true
+        )
         viewModelScope.launch {
             val nextPage = _uiState.value.currentPersonsPage + 1
             val currentPersons = _uiState.value.allFetchedPersons
             _uiState.value = _uiState.value.copy(
+                isLoading = false,
                 currentPersonsPage = nextPage,
                 allFetchedPersons = currentPersons + repository.getPersonsByPage(nextPage)
             )

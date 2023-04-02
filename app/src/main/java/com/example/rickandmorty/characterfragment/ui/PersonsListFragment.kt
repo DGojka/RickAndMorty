@@ -17,7 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmorty.R
 import com.example.rickandmorty.characterfragment.list.PersonListAdapter
-import com.example.rickandmorty.characterfragment.list.helpers.listfilter.Filters
+import com.example.rickandmorty.characterfragment.list.helpers.listfilter.PersonsFilter.Companion.ALIVE
+import com.example.rickandmorty.characterfragment.list.helpers.listfilter.PersonsFilter.Companion.DEAD
+import com.example.rickandmorty.characterfragment.list.helpers.listfilter.PersonsFilter.Companion.FAVOURITES
 import com.example.rickandmorty.databinding.FragmentCharactersListBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -84,9 +86,9 @@ class PersonsListFragment : Fragment() {
 
     private fun showFiltersDialog() {
         val options = arrayOf(
-            Filters.FAVOURITE.toString(),
-            Filters.DEAD.toString(),
-            Filters.ALIVE.toString()
+            FAVOURITES,
+            DEAD,
+            ALIVE
         )
         val selectedItems = getCurrentFilters()
         val builder = AlertDialog.Builder(requireContext())

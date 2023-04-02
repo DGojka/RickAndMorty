@@ -11,4 +11,5 @@
     <string name="favourite_icon">Favourite icon</string>
     <string name="button_manage_filters">Manage filters</string>
     <string name="no_internet">No internet connection! Please try again.</string>
+    <string name="manage_filters_image_desc">Manage filters 3 dots image</string>
 </resources>

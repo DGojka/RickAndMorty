@@ -10,6 +10,7 @@ fun getFavouritePersons(context: Context, personsList: List<Person>): MutableLis
     return prefs.getStringSet(FAVOURITE_PERSONS, mutableSetOf())?.mapToPersonList(personsList)
         ?: mutableListOf()
 }
+
 private fun MutableSet<String>.mapToPersonList(personsList: List<Person>): MutableList<Person> {
     return this.mapNotNull { name ->
         personsList.find { it.name == name }

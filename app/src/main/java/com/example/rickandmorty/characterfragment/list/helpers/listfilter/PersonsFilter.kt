@@ -6,7 +6,7 @@ import com.example.rickandmorty.characterfragment.list.helpers.FiltersManager.Co
 import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePersons
 import com.example.rickandmorty.repository.Person
 
-class FilterPersons(private val personList: List<Person>, private val context: Context) {
+class PersonsFilter(private val personList: List<Person>, private val context: Context) {
 
     fun filter(constraint: CharSequence?): List<Person> {
         val filters = getFilters()
@@ -24,7 +24,6 @@ class FilterPersons(private val personList: List<Person>, private val context: C
 
         }
     }
-
 
     private fun shouldFilterByFavouriteAndUnknownStatus(filters: List<Filters>) =
         filters.contains(Filters.FAVOURITE) && filters.contains(Filters.ALIVE) && filters.contains(
@@ -124,7 +123,7 @@ class FilterPersons(private val personList: List<Person>, private val context: C
     }
 
     companion object {
-        const val FAVOURITES = "favourites"
+        const val FAVOURITES = "Favourites"
         const val ALIVE = "Alive"
         const val DEAD = "Dead"
         const val UNKNOWN = "unknown"

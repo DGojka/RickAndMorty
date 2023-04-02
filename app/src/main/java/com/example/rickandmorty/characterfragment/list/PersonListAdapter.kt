@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
 import com.example.rickandmorty.characterfragment.list.helpers.FAVOURITE_PERSONS
 import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePersons
-import com.example.rickandmorty.characterfragment.list.helpers.listfilter.FilterPersons
+import com.example.rickandmorty.characterfragment.list.helpers.listfilter.PersonsFilter
 import com.example.rickandmorty.databinding.ListItemCharacterBinding
 import com.example.rickandmorty.repository.Person
 
@@ -26,7 +26,7 @@ class PersonListAdapter(
 
     private val allPersons = mutableListOf<Person>()
     private val filteredList = mutableListOf<Person>()
-    private var filterPersons: FilterPersons = FilterPersons(emptyList(), context)
+    private var personsFilter: PersonsFilter = PersonsFilter(emptyList(), context)
 
     inner class CharacterViewHolder(private val binding: ListItemCharacterBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -72,10 +72,10 @@ class PersonListAdapter(
             clear()
             addAll(data)
         }
-        filterPersons = FilterPersons(allPersons, context)
+        personsFilter = PersonsFilter(allPersons, context)
         filteredList.apply {
             clear()
-            addAll(filterPersons.filter(""))
+            addAll(personsFilter.filter(""))
         }
     }
 
@@ -99,7 +99,7 @@ class PersonListAdapter(
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val filterResults = FilterResults()
-                filterResults.values = filterPersons.filter(constraint)
+                filterResults.values = personsFilter.filter(constraint)
 
                 return filterResults
             }
@@ -120,7 +120,7 @@ class PersonListAdapter(
 
     fun applyFilters() {
         filteredList.clear()
-        filteredList.addAll(filterPersons.filter(""))
+        filteredList.addAll(personsFilter.filter(""))
         notifyDataSetChanged()
     }
 }

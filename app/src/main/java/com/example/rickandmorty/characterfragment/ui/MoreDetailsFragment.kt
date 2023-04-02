@@ -13,8 +13,8 @@ import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
 import com.example.rickandmorty.characterfragment.list.helpers.FAVOURITE_PERSONS
 import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePersons
-import com.example.rickandmorty.characterfragment.list.helpers.listfilter.FilterPersons.Companion.ALIVE
-import com.example.rickandmorty.characterfragment.list.helpers.listfilter.FilterPersons.Companion.DEAD
+import com.example.rickandmorty.characterfragment.list.helpers.listfilter.PersonsFilter.Companion.ALIVE
+import com.example.rickandmorty.characterfragment.list.helpers.listfilter.PersonsFilter.Companion.DEAD
 import com.example.rickandmorty.databinding.FragmentMoreDetailsBinding
 import com.example.rickandmorty.repository.Person
 import dagger.hilt.android.AndroidEntryPoint
