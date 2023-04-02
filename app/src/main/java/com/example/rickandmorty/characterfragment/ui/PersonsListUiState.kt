@@ -2,8 +2,8 @@ package com.example.rickandmorty.characterfragment.ui
 
 import com.example.rickandmorty.network.Person
 
-sealed class PersonsListUiState {
-    object Init : PersonsListUiState()
-    class Loaded(var persons: List<Person>) : PersonsListUiState()
-    class MoreDetails(var person : Person): PersonsListUiState()
-}
+data class PersonsListUiState(
+    val isLoading: Boolean,
+    val allPersons: List<Person>,
+    val clickedPerson: Person? = null
+)

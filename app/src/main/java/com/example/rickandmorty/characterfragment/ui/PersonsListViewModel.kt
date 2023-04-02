@@ -7,32 +7,47 @@ import androidx.navigation.NavController
 import com.example.rickandmorty.R
 import com.example.rickandmorty.network.CharacterNetwork
 import com.example.rickandmorty.network.Person
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PersonsListViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow<PersonsListUiState>(PersonsListUiState.Init)
+@HiltViewModel
+class PersonsListViewModel @Inject constructor() : ViewModel() {
+    private val _uiState = MutableStateFlow(
+        PersonsListUiState(
+            true,
+            mutableListOf(), null
+        )
+    )
     val uiState: StateFlow<PersonsListUiState> = _uiState
 
     init {
-        emitAllPersonsList()
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isLoading = false,
+                allPersons = CharacterNetwork.getAllCharacters()
+            )
+        }
     }
 
     fun moreDetails(person: Person, findNavController: NavController) {
         viewModelScope.launch {
-            _uiState.emit(PersonsListUiState.MoreDetails(person))
+            _uiState.value = _uiState.value.copy(
+                clickedPerson = person
+            )
             findNavController.navigate(R.id.action_to_more_details_fragment)
         }
     }
 
-    fun getClickedPerson(): Person {
+  /*  fun getClickedPerson(): Person {
         val moreDetailsState = _uiState.value as PersonsListUiState.MoreDetails
         return moreDetailsState.person
-    }
+    }*/
 
     fun onBackClick() {
-        emitAllPersonsList()
+    //    emitAllPersonsList()
     }
 
     fun saveSelectedFilters(context: Context, selectedItems: List<Int>) {
@@ -48,9 +63,9 @@ class PersonsListViewModel : ViewModel() {
         return prefs.getStringSet("SelectedItems", null)
     }
 
-    private fun emitAllPersonsList() {
+/*    private fun emitAllPersonsList() {
         viewModelScope.launch {
             _uiState.emit(PersonsListUiState.Loaded(CharacterNetwork.getAllCharacters()))
         }
-    }
+    }*/
 }

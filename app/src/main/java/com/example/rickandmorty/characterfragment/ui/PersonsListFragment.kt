@@ -9,21 +9,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.rickandmorty.characterfragment.list.CharacterListAdapter
 import com.example.rickandmorty.databinding.FragmentCharactersListBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 
+@AndroidEntryPoint
 class PersonsListFragment : Fragment() {
     private var _binding: FragmentCharactersListBinding? = null
     private val binding get() = _binding
 
     private lateinit var adapter: CharacterListAdapter
-    private val viewModel: PersonsListViewModel by lazy {
-        ViewModelProvider(requireActivity())[PersonsListViewModel::class.java]
-    }
+    private val viewModel: PersonsListViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -157,14 +157,8 @@ class PersonsListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
-                when (state) {
-                    is PersonsListUiState.Loaded -> {
-                        adapter.submitList(state.persons)
-                        adapter.setData(state.persons)
-                    }
-                    is PersonsListUiState.MoreDetails -> {}//view.findNavController().navigate(R.id.action_to_more_details_fragment)
-                    else -> {}
-                }
+                adapter.submitList(state.allPersons)
+                adapter.setData(state.allPersons)
             }
         }
     }
