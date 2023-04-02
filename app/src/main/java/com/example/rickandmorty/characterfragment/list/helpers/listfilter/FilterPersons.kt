@@ -7,9 +7,9 @@ import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePerso
 import com.example.rickandmorty.repository.Person
 
 class FilterPersons(private val personList: List<Person>, private val context: Context) {
+
     fun filter(constraint: CharSequence?): List<Person> {
         val filters = getFilters()
-        if (filters != null) {
             return when {
                 shouldFilterByFavouriteAndUnknownStatus(filters) -> filterFavouriteByUnknownStatus(constraint)
                 shouldFilterByFavouriteAndDead(filters) -> filterFavouriteByDead(constraint)
@@ -19,9 +19,8 @@ class FilterPersons(private val personList: List<Person>, private val context: C
                 filters.contains(Filters.DEAD) -> filterByDead(constraint)
                 filters.contains(Filters.ALIVE) -> filterByAlive(constraint)
                 else -> filterByNameOrStatus(constraint)
-            }
+
         }
-        return personList
     }
 
 
@@ -105,9 +104,10 @@ class FilterPersons(private val personList: List<Person>, private val context: C
             ) || it.status.contains(constraint.toString(), ignoreCase = true)
         }
 
-    private fun getFilters(): MutableList<Filters>? {
-        return context.getSharedPreferences(FILTERS, Context.MODE_PRIVATE)
-            .getStringSet(FILTERS_KEY, null)?.toList()?.convertToFilterEnum()?.toMutableList()
+    private fun getFilters(): MutableList<Filters> {
+        val filters = context.getSharedPreferences(FILTERS, Context.MODE_PRIVATE)
+            .getStringSet(FILTERS_KEY, null)?.toList()?: mutableListOf()
+        return filters.convertToFilterEnum().toMutableList()
     }
 
     private fun List<String>.convertToFilterEnum(): List<Filters> {

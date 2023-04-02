@@ -31,7 +31,7 @@ class PersonsListViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
-                allPersons = repository.getAllPersons()
+                allFetchedPersons = repository.getPersonsByPage(1)
             )
         }
     }
@@ -51,5 +51,16 @@ class PersonsListViewModel @Inject constructor(
 
     fun getSavedFilters(): MutableSet<String> {
         return filtersManager.getSavedFilters()?.toMutableSet() ?: mutableSetOf()
+    }
+
+    fun loadMorePersons() {
+        viewModelScope.launch {
+            val page = _uiState.value.currentPersonsPage + 1
+            val currentPersons = _uiState.value.allFetchedPersons
+            _uiState.value = _uiState.value.copy(
+                currentPersonsPage = page,
+                allFetchedPersons = currentPersons + repository.getPersonsByPage(page)
+            )
+        }
     }
 }

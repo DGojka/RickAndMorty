@@ -10,6 +10,8 @@ import android.widget.SearchView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmorty.R
 import com.example.rickandmorty.characterfragment.list.PersonListAdapter
 import com.example.rickandmorty.characterfragment.list.helpers.listfilter.Filters
@@ -48,6 +50,21 @@ class PersonsListFragment : Fragment() {
         binding?.manageFiltersButton?.setOnClickListener {
             showFiltersDialog()
         }
+
+        binding?.recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                val totalItemCount = layoutManager.itemCount
+
+                if (lastVisibleItemPosition == totalItemCount - 1) {
+                   viewModel.loadMorePersons()
+                }
+            }
+        })
+
         return binding?.root
     }
 
@@ -95,8 +112,8 @@ class PersonsListFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
                 with(state){
-                    adapter.submitList(allPersons)
-                    adapter.setData(allPersons)
+                    adapter.submitList(allFetchedPersons)
+                    adapter.setData(allFetchedPersons)
                     if(isLoading){
                         _binding!!.loadingBar.visibility = View.VISIBLE
                     }else{

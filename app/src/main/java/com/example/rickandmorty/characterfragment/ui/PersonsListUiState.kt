@@ -4,6 +4,7 @@ import com.example.rickandmorty.repository.Person
 
 data class PersonsListUiState(
     val isLoading: Boolean,
-    val allPersons: List<Person>,
-    val clickedPerson: Person? = null
+    val allFetchedPersons: List<Person>,
+    val clickedPerson: Person? = null,
+    val currentPersonsPage: Int = 1
 )

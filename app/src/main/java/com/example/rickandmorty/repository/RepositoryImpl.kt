@@ -10,4 +10,12 @@ class RepositoryImpl(private val apiService: ApiService) : Repository {
         }
         return allPersons
     }
+
+    override suspend fun getPersonsByPage(page: Int): List<Person> {
+        return try {
+            apiService.getPersons(page).results
+        } catch (e: Exception) {
+            emptyList() // Return an empty list if an exception occurs
+        }
+    }
 }
