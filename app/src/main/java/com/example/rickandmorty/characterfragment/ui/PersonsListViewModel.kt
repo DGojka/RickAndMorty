@@ -50,6 +50,6 @@ class PersonsListViewModel @Inject constructor(
     }
 
     fun getSavedFilters(): MutableSet<String> {
-        return filtersManager.getSelectedFilters()?.toMutableSet() ?: mutableSetOf()
+        return filtersManager.getSavedFilters()?.toMutableSet() ?: mutableSetOf()
     }
 }

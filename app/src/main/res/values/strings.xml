@@ -9,4 +9,5 @@
     <string name="name">Name</string>
     <string name="persons_image">Image of an person</string>
     <string name="favourite_icon">Favourite icon</string>
+    <string name="button_manage_filters">Manage filters</string>
 </resources>

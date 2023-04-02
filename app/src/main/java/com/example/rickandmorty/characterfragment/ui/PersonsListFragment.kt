@@ -11,7 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.rickandmorty.R
-import com.example.rickandmorty.characterfragment.list.CharacterListAdapter
+import com.example.rickandmorty.characterfragment.list.PersonListAdapter
 import com.example.rickandmorty.characterfragment.list.helpers.listfilter.Filters
 import com.example.rickandmorty.databinding.FragmentCharactersListBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,7 +22,7 @@ class PersonsListFragment : Fragment() {
     private var _binding: FragmentCharactersListBinding? = null
     private val binding get() = _binding
 
-    private lateinit var adapter: CharacterListAdapter
+    private lateinit var adapter: PersonListAdapter
     private val viewModel: PersonsListViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -30,7 +30,7 @@ class PersonsListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentCharactersListBinding.inflate(inflater, container, false)
-        adapter = CharacterListAdapter(requireContext()) { person ->
+        adapter = PersonListAdapter(requireContext()) { person ->
             viewModel.moreDetails(person, findNavController())
         }
         binding?.recyclerView?.adapter = adapter

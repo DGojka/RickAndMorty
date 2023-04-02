@@ -10,6 +10,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
+import com.example.rickandmorty.characterfragment.list.helpers.listfilter.FilterPersons.Companion.ALIVE
+import com.example.rickandmorty.characterfragment.list.helpers.listfilter.FilterPersons.Companion.DEAD
 import com.example.rickandmorty.databinding.FragmentMoreDetailsBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -32,13 +34,6 @@ class MoreDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         updateUi(view)
- /*       val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-              //  findNavController().navigate(R.id.action_to_personsFragment)
-               // viewModel.onBackClick()
-            }
-        }
-        callback.handleOnBackPressed()*/
     }
 
     override fun onDestroyView() {
@@ -49,8 +44,8 @@ class MoreDetailsFragment : Fragment() {
     private fun updateUi(view: View) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
-                with(state.clickedPerson){
-                    if(this != null){
+                with(state.clickedPerson) {
+                    if (this != null) {
                         Glide.with(view)
                             .load(image)
                             .placeholder(R.drawable.placeholder)
@@ -58,11 +53,19 @@ class MoreDetailsFragment : Fragment() {
                         binding.moreInfoCharacterName.text = name
                         binding.moreInfoStatus.text = status
 
-                        binding.gender.text = String.format(resources.getString(R.string.attribute_gender),gender)
-                        binding.locationName.text = String.format(resources.getString(R.string.attribute_location),location.name)
-                        binding.species.text = String.format(resources.getString(R.string.attribute_species),species)
-                        binding.origin.text = String.format(resources.getString(R.string.attribute_origin),origin.name)
-                        binding.moreInfoStatus.setTextColor(if (status == "Alive") Color.GREEN else Color.RED)
+                        binding.gender.text =
+                            String.format(resources.getString(R.string.attribute_gender), gender)
+                        binding.locationName.text = String.format(
+                            resources.getString(R.string.attribute_location),
+                            location.name
+                        )
+                        binding.species.text =
+                            String.format(resources.getString(R.string.attribute_species), species)
+                        binding.origin.text = String.format(
+                            resources.getString(R.string.attribute_origin),
+                            origin.name
+                        )
+                        binding.moreInfoStatus.setTextColor(if (status == ALIVE) Color.GREEN else if (status == DEAD) Color.RED else Color.LTGRAY)
                     }
                 }
             }

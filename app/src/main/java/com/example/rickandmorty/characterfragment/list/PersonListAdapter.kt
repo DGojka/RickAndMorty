@@ -9,18 +9,19 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
+import com.example.rickandmorty.characterfragment.list.helpers.FAVOURITE_PERSONS
 import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePersons
 import com.example.rickandmorty.characterfragment.list.helpers.listfilter.FilterPersons
 import com.example.rickandmorty.databinding.ListItemCharacterBinding
 import com.example.rickandmorty.repository.Person
 
 
-class CharacterListAdapter(
+class PersonListAdapter(
     private val context: Context,
     private val onPersonClick: (Person) -> Unit
 ) :
-    ListAdapter<Person, CharacterListAdapter.CharacterViewHolder>(
-        CharacterDiffCallback()
+    ListAdapter<Person, PersonListAdapter.CharacterViewHolder>(
+        PersonDiffCallback()
     ), Filterable {
 
     private val allPersons = mutableListOf<Person>()
@@ -44,7 +45,7 @@ class CharacterListAdapter(
             }
         }
         private fun handleFavouriteButtonClick(binding: ListItemCharacterBinding, person: Person) {
-            val editor = itemView.context.getSharedPreferences("asd", Context.MODE_PRIVATE).edit()
+            val editor = itemView.context.getSharedPreferences(FAVOURITE_PERSONS, Context.MODE_PRIVATE).edit()
             val favPersons = getFavouritePersons(context, allPersons)
             val isFavourite = favPersons.contains(person)
             if (isFavourite) {
@@ -54,7 +55,7 @@ class CharacterListAdapter(
                 favPersons.add(person)
                 binding.favouriteButton.setImageResource(R.drawable.ic_fav)
             }
-            editor.putStringSet("FavouritePersons", favPersons.map { it.name }.toSet())
+            editor.putStringSet(FAVOURITE_PERSONS, favPersons.map { it.name }.toSet())
             editor.apply()
         }
     }

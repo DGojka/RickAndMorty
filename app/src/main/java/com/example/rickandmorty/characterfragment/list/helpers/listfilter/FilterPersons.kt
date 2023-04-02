@@ -1,6 +1,8 @@
 package com.example.rickandmorty.characterfragment.list.helpers.listfilter
 
 import android.content.Context
+import com.example.rickandmorty.characterfragment.list.helpers.FiltersManager.Companion.FILTERS
+import com.example.rickandmorty.characterfragment.list.helpers.FiltersManager.Companion.FILTERS_KEY
 import com.example.rickandmorty.characterfragment.list.helpers.getFavouritePersons
 import com.example.rickandmorty.repository.Person
 
@@ -104,8 +106,8 @@ class FilterPersons(private val personList: List<Person>, private val context: C
         }
 
     private fun getFilters(): MutableList<Filters>? {
-        return context.getSharedPreferences("Filters", Context.MODE_PRIVATE)
-            .getStringSet("SelectedItems", null)?.toList()?.convertToFilterEnum()?.toMutableList()
+        return context.getSharedPreferences(FILTERS, Context.MODE_PRIVATE)
+            .getStringSet(FILTERS_KEY, null)?.toList()?.convertToFilterEnum()?.toMutableList()
     }
 
     private fun List<String>.convertToFilterEnum(): List<Filters> {
