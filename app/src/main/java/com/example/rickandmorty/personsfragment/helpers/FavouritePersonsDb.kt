@@ -12,18 +12,18 @@ class FavouritePersonsDb(val context: Context) {
 
     fun saveCurrentFavPersonsList(favPersons: List<Person>){
         val editor = prefs.edit()
-        editor.putStringSet(FAVOURITE_PERSONS, favPersons.map { it.name }.toSet())
+        editor.putStringSet(FAVOURITE_PERSONS, favPersons.map { it.id.toString() }.toSet())
         editor.apply()
     }
 
 
     private fun MutableSet<String>.mapToPersonList(personsList: List<Person>): MutableList<Person> {
-        return this.mapNotNull { name ->
-            personsList.find { it.name == name }
+        return this.mapNotNull { id ->
+            personsList.find { it.id == id.toInt() }
         }.toMutableList()
     }
 
     companion object {
-        const val FAVOURITE_PERSONS = "FavouritePersons"
+        const val FAVOURITE_PERSONS = "FavouritePersonsId"
     }
 }
