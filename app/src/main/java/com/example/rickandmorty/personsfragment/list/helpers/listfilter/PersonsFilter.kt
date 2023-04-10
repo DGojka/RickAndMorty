@@ -4,8 +4,9 @@ import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
 import com.example.rickandmorty.personsfragment.helpers.PersonsListCallback
 import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager
 import com.example.rickandmorty.repository.Person
+import javax.inject.Inject
 
-class PersonsFilter(
+class PersonsFilter @Inject constructor(
     private var personsList: List<Person>,
     private val filtersManager: FiltersManager,
     private val favouritePersonsDb: FavouritePersonsDb

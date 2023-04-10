@@ -2,8 +2,9 @@ package com.example.rickandmorty.personsfragment.helpers
 
 import android.content.Context
 import com.example.rickandmorty.repository.Person
+import javax.inject.Inject
 
-class FavouritePersonsDb(val context: Context) : PersonsListCallback {
+class FavouritePersonsDb @Inject constructor(val context: Context) : PersonsListCallback {
     private val prefs = context.getSharedPreferences(FAVOURITE_PERSONS, Context.MODE_PRIVATE)
     private var allPersonsList: List<Person> = mutableListOf()
 

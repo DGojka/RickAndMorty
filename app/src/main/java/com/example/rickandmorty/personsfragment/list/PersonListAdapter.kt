@@ -47,7 +47,7 @@ class PersonListAdapter(
                 favouritesListener.removePersonFromFavourite(person)
                 binding.favouriteButton.setImageResource(R.drawable.ic_fav_border)
             } else {
-              favouritesListener.addPersonToFavourite(person)
+                favouritesListener.addPersonToFavourite(person)
                 binding.favouriteButton.setImageResource(R.drawable.ic_fav)
             }
         }

@@ -117,8 +117,6 @@ class PersonsListFragment : Fragment() {
         builder.setPositiveButton(R.string.apply_filters) { _, _ ->
             viewModel.saveSelectedFilters(selectedItems)
             viewModel.applyFilters()
-            //    adapter.setData(viewModel.uiState.value.filteredPersons)
-            //       adapter.applyFilters()
             if (adapter.itemCount == 0) {
                 binding?.noPersonOnList?.visibility = View.VISIBLE
             } else {
@@ -140,11 +138,8 @@ class PersonsListFragment : Fragment() {
             if (isNetworkAvailable(requireContext())) {
                 viewModel.uiState.collect { state ->
                     with(state) {
-                        Log.e("asdd", filteredPersons.size.toString())
-                        adapter.submitList(filteredPersons)
                         adapter.setData(filteredPersons, binding?.searchView?.query.toString())
-
-                        Log.e("exposedbyvm", filteredPersons.size.toString())
+                        adapter.submitList(filteredPersons)
                         if (isLoading) {
                             _binding!!.loadingBar.visibility = View.VISIBLE
                         } else {

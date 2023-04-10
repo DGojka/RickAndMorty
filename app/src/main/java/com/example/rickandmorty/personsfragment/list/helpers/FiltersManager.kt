@@ -1,7 +1,9 @@
 package com.example.rickandmorty.personsfragment.list.helpers
 
 import android.content.Context
-class FiltersManager(context: Context) {
+import javax.inject.Inject
+
+class FiltersManager @Inject constructor(context: Context) {
     private val prefs = context.getSharedPreferences(FILTERS, Context.MODE_PRIVATE)
 
     fun getSavedFilters(): Set<String> {
