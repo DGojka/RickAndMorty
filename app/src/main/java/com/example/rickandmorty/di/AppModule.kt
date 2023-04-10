@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
 import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager
 import com.example.rickandmorty.network.ApiService
+import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter
 import com.example.rickandmorty.repository.Repository
 import com.example.rickandmorty.repository.RepositoryImpl
 import dagger.Module
@@ -50,6 +51,12 @@ class AppModule {
     @Singleton
     fun provideFavouritePersonsDb(@ApplicationContext context : Context): FavouritePersonsDb {
         return  FavouritePersonsDb(context)
+    }
+
+    @Provides
+    @Singleton
+    fun providePersonsFilter(@ApplicationContext context: Context,favouritePersonsDb: FavouritePersonsDb): PersonsFilter{
+        return PersonsFilter(mutableListOf(),context,favouritePersonsDb)
     }
 
     companion object {

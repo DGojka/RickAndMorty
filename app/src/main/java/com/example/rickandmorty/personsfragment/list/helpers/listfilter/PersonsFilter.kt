@@ -7,7 +7,7 @@ import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager.Comp
 import com.example.rickandmorty.repository.Person
 
 class PersonsFilter(
-    private val personList: List<Person>,
+    private var personList: List<Person>,
     private val context: Context,
     private val favouritePersonsDb: FavouritePersonsDb
 ) {
@@ -27,6 +27,10 @@ class PersonsFilter(
             else -> filterByNameOrStatus(constraint)
 
         }
+    }
+
+    fun updatePersonsList(persons: List<Person>){
+        personList = persons
     }
 
     private fun shouldFilterByFavouriteAndUnknownStatus(filters: List<Filters>) =

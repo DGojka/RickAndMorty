@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.rickandmorty.R
 import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager
+import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter
 import com.example.rickandmorty.repository.Person
 import com.example.rickandmorty.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,22 +17,25 @@ import javax.inject.Inject
 @HiltViewModel
 class PersonsListViewModel @Inject constructor(
     private val filtersManager: FiltersManager,
-    private val repository: Repository
+    private val repository: Repository,
+    private val personsFilter: PersonsFilter
 ) :
     ViewModel() {
     private val _uiState = MutableStateFlow(
         PersonsListUiState(
-            true,
-            mutableListOf(), null
+            true
         )
     )
     val uiState: StateFlow<PersonsListUiState> = _uiState
 
     init {
         viewModelScope.launch {
+            val personsList = repository.getPersonsByPage(1)
+            personsFilter.updatePersonsList(personsList)
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
-                allFetchedPersons = repository.getPersonsByPage(1)
+                allFetchedPersons = personsList,
+                filteredPersons = personsFilter.filter("")
             )
         }
     }
@@ -60,11 +64,21 @@ class PersonsListViewModel @Inject constructor(
         viewModelScope.launch {
             val nextPage = _uiState.value.currentPersonsPage + 1
             val currentPersons = _uiState.value.allFetchedPersons
+            val newList = currentPersons + repository.getPersonsByPage(nextPage)
+
+            personsFilter.updatePersonsList(newList)
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
                 currentPersonsPage = nextPage,
-                allFetchedPersons = currentPersons + repository.getPersonsByPage(nextPage)
+                allFetchedPersons = newList,
+                filteredPersons = personsFilter.filter("")
             )
         }
+    }
+
+    fun applyFilters() {
+        _uiState.value = _uiState.value.copy(
+            filteredPersons = personsFilter.filter("")
+        )
     }
 }

@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,7 +44,7 @@ class PersonsListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentPersonsListBinding.inflate(inflater, container, false)
-        adapter = PersonListAdapter(requireContext(), favouritePersonsDb) { person ->
+        adapter = PersonListAdapter(favouritePersonsDb) { person ->
             viewModel.moreDetails(person, findNavController())
         }
         binding?.recyclerView?.adapter = adapter
@@ -62,15 +63,15 @@ class PersonsListFragment : Fragment() {
         binding?.manageFiltersButton?.setOnClickListener {
             showFiltersDialog()
         }
-
         binding?.recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-
-                if (lastVisibleItemPosition == adapter.getAllItemsCount() - 1) {
+                Log.e("lastvisible", lastVisibleItemPosition.toString())
+                Log.e("asd", adapter.itemCount.toString())
+                if (lastVisibleItemPosition == adapter.itemCount - 1) {
                     viewModel.loadMorePersons()
                 }
             }
@@ -107,7 +108,9 @@ class PersonsListFragment : Fragment() {
         }
         builder.setPositiveButton(R.string.apply_filters) { _, _ ->
             viewModel.saveSelectedFilters(selectedItems)
-            adapter.applyFilters()
+            viewModel.applyFilters()
+        //    adapter.setData(viewModel.uiState.value.filteredPersons)
+     //       adapter.applyFilters()
             if (adapter.itemCount == 0) {
                 binding?.noPersonOnList?.visibility = View.VISIBLE
             } else {
@@ -129,8 +132,11 @@ class PersonsListFragment : Fragment() {
             if (isNetworkAvailable(requireContext())) {
                 viewModel.uiState.collect { state ->
                     with(state) {
-                        adapter.submitList(allFetchedPersons)
-                        adapter.setData(allFetchedPersons)
+                        Log.e("asdd",filteredPersons.size.toString())
+                        adapter.submitList(filteredPersons)
+                        adapter.setData(filteredPersons,binding?.searchView?.query.toString())
+
+                        Log.e("exposedbyvm",filteredPersons.size.toString())
                         if (isLoading) {
                             _binding!!.loadingBar.visibility = View.VISIBLE
                         } else {
