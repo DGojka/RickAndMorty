@@ -35,7 +35,7 @@ class PersonsListViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
                 allFetchedPersons = personsList,
-                filteredPersons = personsFilter.filter("")
+                filteredPersons = personsFilter.filter()
             )
         }
     }
@@ -71,14 +71,14 @@ class PersonsListViewModel @Inject constructor(
                 isLoading = false,
                 currentPersonsPage = nextPage,
                 allFetchedPersons = newList,
-                filteredPersons = personsFilter.filter("")
+                filteredPersons = personsFilter.filter()
             )
         }
     }
 
     fun applyFilters() {
         _uiState.value = _uiState.value.copy(
-            filteredPersons = personsFilter.filter("")
+            filteredPersons = personsFilter.filter()
         )
     }
 }

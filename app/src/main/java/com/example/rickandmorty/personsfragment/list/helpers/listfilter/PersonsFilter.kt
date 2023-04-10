@@ -12,24 +12,21 @@ class PersonsFilter(
     private val favouritePersonsDb: FavouritePersonsDb
 ) {
 
-    fun filter(constraint: CharSequence?): List<Person> {
+    fun filter(): List<Person> {
         val filters = getFilters()
         return when {
-            shouldFilterByFavouriteAndUnknownStatus(filters) -> filterFavouriteByUnknownStatus(
-                constraint
-            )
-            shouldFilterByFavouriteAndDead(filters) -> filterFavouriteByDead(constraint)
-            shouldFilterByFavouriteAndAlive(filters) -> filterFavouriteByAlive(constraint)
-            shouldFilterByUnknownStatus(filters) -> filterByUnknownStatus(constraint)
-            filters.contains(Filters.FAVOURITE) -> filterFavourite(constraint)
-            filters.contains(Filters.DEAD) -> filterByDead(constraint)
-            filters.contains(Filters.ALIVE) -> filterByAlive(constraint)
-            else -> filterByNameOrStatus(constraint)
-
+            shouldFilterByFavouriteAndUnknownStatus(filters) -> filterFavouriteByUnknownStatus()
+            shouldFilterByFavouriteAndDead(filters) -> filterFavouriteByDead()
+            shouldFilterByFavouriteAndAlive(filters) -> filterFavouriteByAlive()
+            shouldFilterByUnknownStatus(filters) -> filterByUnknownStatus()
+            filters.contains(Filters.FAVOURITE) -> filterFavourite()
+            filters.contains(Filters.DEAD) -> filterByDead()
+            filters.contains(Filters.ALIVE) -> filterByAlive()
+            else -> personList
         }
     }
 
-    fun updatePersonsList(persons: List<Person>){
+    fun updatePersonsList(persons: List<Person>) {
         personList = persons
     }
 
@@ -48,69 +45,37 @@ class PersonsFilter(
     private fun shouldFilterByUnknownStatus(filters: List<Filters>) =
         filters.contains(Filters.ALIVE) && filters.contains(Filters.DEAD)
 
-    private fun filterFavouriteByUnknownStatus(constraint: CharSequence?) =
+    private fun filterFavouriteByUnknownStatus() =
         favouritePersonsDb.getFavouritePersons(personList).filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) && it.status == UNKNOWN
+            it.status == UNKNOWN
         }
 
-    private fun filterFavouriteByDead(constraint: CharSequence?) =
+    private fun filterFavouriteByDead() =
         favouritePersonsDb.getFavouritePersons(personList).filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) && it.status == DEAD
+            it.status == DEAD
         }
 
-    private fun filterFavouriteByAlive(constraint: CharSequence?) =
+    private fun filterFavouriteByAlive() =
         favouritePersonsDb.getFavouritePersons(personList).filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) && it.status == ALIVE
+            it.status == ALIVE
         }
 
-    private fun filterFavourite(constraint: CharSequence?) =
-        favouritePersonsDb.getFavouritePersons(personList).filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) || it.status.contains(constraint.toString(), ignoreCase = true)
-        }
+    private fun filterFavourite() =
+        favouritePersonsDb.getFavouritePersons(personList)
 
-    private fun filterByUnknownStatus(constraint: CharSequence?) =
+    private fun filterByUnknownStatus() =
         personList.filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) && it.status == UNKNOWN
-
+            it.status == UNKNOWN
         }
 
-    private fun filterByDead(constraint: CharSequence?) =
+    private fun filterByDead() =
         personList.filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) && it.status == DEAD
+            it.status == DEAD
         }
 
-    private fun filterByAlive(constraint: CharSequence?) =
+    private fun filterByAlive() =
         personList.filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) && it.status == ALIVE
-        }
-
-    private fun filterByNameOrStatus(constraint: CharSequence?) =
-        personList.filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) || it.status.contains(constraint.toString(), ignoreCase = true)
+            it.status == ALIVE
         }
 
     private fun getFilters(): MutableList<Filters> {
