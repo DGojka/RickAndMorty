@@ -1,19 +1,19 @@
 package com.example.rickandmorty.personsfragment.list.helpers.listfilter
 
-import android.content.Context
 import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
-import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager.Companion.FILTERS
-import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager.Companion.FILTERS_KEY
+import com.example.rickandmorty.personsfragment.helpers.PersonsListCallback
+import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager
 import com.example.rickandmorty.repository.Person
 
 class PersonsFilter(
-    private var personList: List<Person>,
-    private val context: Context,
+    private var personsList: List<Person>,
+    private val filtersManager: FiltersManager,
     private val favouritePersonsDb: FavouritePersonsDb
-) {
+) : PersonsListCallback{
 
     fun filter(): List<Person> {
-        val filters = getFilters()
+        val filters = filtersManager.getSavedFilters().toList().convertToFilterEnum()
+
         return when {
             shouldFilterByFavouriteAndUnknownStatus(filters) -> filterFavouriteByUnknownStatus()
             shouldFilterByFavouriteAndDead(filters) -> filterFavouriteByDead()
@@ -22,12 +22,12 @@ class PersonsFilter(
             filters.contains(Filters.FAVOURITE) -> filterFavourite()
             filters.contains(Filters.DEAD) -> filterByDead()
             filters.contains(Filters.ALIVE) -> filterByAlive()
-            else -> personList
+            else -> personsList
         }
     }
 
-    fun updatePersonsList(persons: List<Person>) {
-        personList = persons
+    override fun onPersonsListUpdated(personsList: List<Person>) {
+        this.personsList = personsList
     }
 
     private fun shouldFilterByFavouriteAndUnknownStatus(filters: List<Filters>) =
@@ -46,43 +46,37 @@ class PersonsFilter(
         filters.contains(Filters.ALIVE) && filters.contains(Filters.DEAD)
 
     private fun filterFavouriteByUnknownStatus() =
-        favouritePersonsDb.getFavouritePersons(personList).filter {
+        favouritePersonsDb.getAllFavouritePersons().filter {
             it.status == UNKNOWN
         }
 
     private fun filterFavouriteByDead() =
-        favouritePersonsDb.getFavouritePersons(personList).filter {
+        favouritePersonsDb.getAllFavouritePersons().filter {
             it.status == DEAD
         }
 
     private fun filterFavouriteByAlive() =
-        favouritePersonsDb.getFavouritePersons(personList).filter {
+        favouritePersonsDb.getAllFavouritePersons().filter {
             it.status == ALIVE
         }
 
     private fun filterFavourite() =
-        favouritePersonsDb.getFavouritePersons(personList)
+        favouritePersonsDb.getAllFavouritePersons()
 
     private fun filterByUnknownStatus() =
-        personList.filter {
+        personsList.filter {
             it.status == UNKNOWN
         }
 
     private fun filterByDead() =
-        personList.filter {
+        personsList.filter {
             it.status == DEAD
         }
 
     private fun filterByAlive() =
-        personList.filter {
+        personsList.filter {
             it.status == ALIVE
         }
-
-    private fun getFilters(): MutableList<Filters> {
-        val filters = context.getSharedPreferences(FILTERS, Context.MODE_PRIVATE)
-            .getStringSet(FILTERS_KEY, null)?.toList() ?: mutableListOf()
-        return filters.convertToFilterEnum().toMutableList()
-    }
 
     private fun List<String>.convertToFilterEnum(): List<Filters> {
         return this.map { intValue ->

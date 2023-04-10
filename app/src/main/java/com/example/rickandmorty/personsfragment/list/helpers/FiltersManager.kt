@@ -4,8 +4,8 @@ import android.content.Context
 class FiltersManager(context: Context) {
     private val prefs = context.getSharedPreferences(FILTERS, Context.MODE_PRIVATE)
 
-    fun getSavedFilters(): Set<String>? {
-        return prefs.getStringSet(FILTERS_KEY, null)
+    fun getSavedFilters(): Set<String> {
+        return prefs.getStringSet(FILTERS_KEY, null)?: mutableSetOf()
     }
 
     fun saveSelectedFilters(selectedItems: List<Int>) {

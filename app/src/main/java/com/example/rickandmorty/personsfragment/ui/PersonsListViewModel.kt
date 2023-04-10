@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.rickandmorty.R
+import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
 import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter
 import com.example.rickandmorty.repository.Person
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class PersonsListViewModel @Inject constructor(
     private val filtersManager: FiltersManager,
     private val repository: Repository,
-    private val personsFilter: PersonsFilter
+    private val personsFilter: PersonsFilter,
+    private val favouritePersonsDbImpl: FavouritePersonsDb
 ) :
     ViewModel() {
     private val _uiState = MutableStateFlow(
@@ -31,7 +33,8 @@ class PersonsListViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val personsList = repository.getPersonsByPage(1)
-            personsFilter.updatePersonsList(personsList)
+            personsFilter.onPersonsListUpdated(personsList)
+            favouritePersonsDbImpl.onPersonsListUpdated(personsList)
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
                 allFetchedPersons = personsList,
@@ -54,7 +57,7 @@ class PersonsListViewModel @Inject constructor(
 
 
     fun getSavedFilters(): MutableSet<String> =
-        filtersManager.getSavedFilters()?.toMutableSet() ?: mutableSetOf()
+        filtersManager.getSavedFilters().toMutableSet()
 
 
     fun loadMorePersons() {
@@ -66,7 +69,8 @@ class PersonsListViewModel @Inject constructor(
             val currentPersons = _uiState.value.allFetchedPersons
             val newList = currentPersons + repository.getPersonsByPage(nextPage)
 
-            personsFilter.updatePersonsList(newList)
+            personsFilter.onPersonsListUpdated(newList)
+            favouritePersonsDbImpl.onPersonsListUpdated(newList)
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
                 currentPersonsPage = nextPage,
@@ -81,4 +85,16 @@ class PersonsListViewModel @Inject constructor(
             filteredPersons = personsFilter.filter()
         )
     }
+
+    fun isPersonFavourite(person: Person): Boolean =
+        favouritePersonsDbImpl.getAllFavouritePersons().contains(person)
+
+    fun addPersonToFavourite(person: Person) {
+        favouritePersonsDbImpl.addPersonToFavourite(person)
+    }
+
+    fun removePersonFromFavourite(person: Person) {
+        favouritePersonsDbImpl.removePersonFromFavourite(person)
+    }
+
 }

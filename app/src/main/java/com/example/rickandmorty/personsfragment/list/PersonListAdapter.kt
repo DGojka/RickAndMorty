@@ -8,13 +8,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
-import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
 import com.example.rickandmorty.databinding.ListItemCharacterBinding
+import com.example.rickandmorty.personsfragment.list.helpers.FavouritesListener
 import com.example.rickandmorty.repository.Person
 
 
 class PersonListAdapter(
-    private val favouritePersonsDb: FavouritePersonsDb,
+    private val favouritesListener: FavouritesListener,
     private val onPersonClick: (Person) -> Unit
 ) :
     ListAdapter<Person, PersonListAdapter.CharacterViewHolder>(
@@ -35,9 +35,7 @@ class PersonListAdapter(
                     .placeholder(R.drawable.placeholder)
                     .into(binding.characterImage)
 
-                val isFavourite =
-                    favouritePersonsDb.getFavouritePersons(personsList).contains(person)
-                favouriteButton.setImageResource(if (isFavourite) R.drawable.ic_fav else R.drawable.ic_fav_border)
+                favouriteButton.setImageResource(if (favouritesListener.isPersonFavourite(person = person)) R.drawable.ic_fav else R.drawable.ic_fav_border)
                 favouriteButton.setOnClickListener {
                     handleFavouriteButtonClick(binding, person)
                 }
@@ -45,17 +43,13 @@ class PersonListAdapter(
         }
 
         private fun handleFavouriteButtonClick(binding: ListItemCharacterBinding, person: Person) {
-            val favPersons = favouritePersonsDb.getFavouritePersons(personsList)
-            val isFavourite = favPersons.contains(person)
-
-            if (isFavourite) {
-                favPersons.remove(person)
+            if (favouritesListener.isPersonFavourite(person)) {
+                favouritesListener.removePersonFromFavourite(person)
                 binding.favouriteButton.setImageResource(R.drawable.ic_fav_border)
             } else {
-                favPersons.add(person)
+              favouritesListener.addPersonToFavourite(person)
                 binding.favouriteButton.setImageResource(R.drawable.ic_fav)
             }
-            favouritePersonsDb.saveCurrentFavPersonsList(favPersons)
         }
     }
 

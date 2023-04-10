@@ -55,8 +55,8 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providePersonsFilter(@ApplicationContext context: Context,favouritePersonsDb: FavouritePersonsDb): PersonsFilter{
-        return PersonsFilter(mutableListOf(),context,favouritePersonsDb)
+    fun providePersonsFilter(filtersManager: FiltersManager, favouritePersonsDb: FavouritePersonsDb): PersonsFilter{
+        return PersonsFilter(mutableListOf(),filtersManager,favouritePersonsDb)
     }
 
     companion object {

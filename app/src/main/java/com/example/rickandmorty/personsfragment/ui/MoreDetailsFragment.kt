@@ -10,22 +10,18 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
-import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.ALIVE
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.DEAD
 import com.example.rickandmorty.databinding.FragmentMoreDetailsBinding
 import com.example.rickandmorty.repository.Person
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MoreDetailsFragment : Fragment() {
     private var _binding: FragmentMoreDetailsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PersonsListViewModel by activityViewModels()
-    @Inject
-    lateinit var favouritePersonsDb: FavouritePersonsDb
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,14 +79,11 @@ class MoreDetailsFragment : Fragment() {
                                 }
                             )
                         }
-                        val favPersons =
-                            favouritePersonsDb.getFavouritePersons(state.allFetchedPersons)
-
                         val imageResId =
-                            if (favPersons.contains(this)) R.drawable.ic_fav else R.drawable.ic_fav_border
+                            if (viewModel.isPersonFavourite(person = this)) R.drawable.ic_fav else R.drawable.ic_fav_border
                         binding.favouriteButton.setImageResource(imageResId)
                         binding.favouriteButton.setOnClickListener {
-                            handleFavouriteButtonOnClick(this, favPersons)
+                            handleFavouriteButtonOnClick(this)
                         }
                     }
                 }
@@ -100,15 +93,13 @@ class MoreDetailsFragment : Fragment() {
 
     private fun handleFavouriteButtonOnClick(
         person: Person,
-        favPersons: MutableList<Person>
     ) {
-        if (favPersons.contains(person)) {
-            favPersons.remove(person)
+        if (viewModel.isPersonFavourite(person)) {
+            viewModel.removePersonFromFavourite(person)
             binding.favouriteButton.setImageResource(R.drawable.ic_fav_border)
         } else {
-            favPersons.add(person)
+            viewModel.addPersonToFavourite(person)
             binding.favouriteButton.setImageResource(R.drawable.ic_fav)
         }
-        favouritePersonsDb.saveCurrentFavPersonsList(favPersons)
     }
 }

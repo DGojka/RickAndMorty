@@ -18,15 +18,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.FragmentPersonsListBinding
-import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
 import com.example.rickandmorty.personsfragment.list.PersonListAdapter
+import com.example.rickandmorty.personsfragment.list.helpers.FavouritesListener
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.ALIVE
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.DEAD
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.FAVOURITES
+import com.example.rickandmorty.repository.Person
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class PersonsListFragment : Fragment() {
@@ -36,15 +36,23 @@ class PersonsListFragment : Fragment() {
     private lateinit var adapter: PersonListAdapter
     private val viewModel: PersonsListViewModel by activityViewModels()
 
-    @Inject
-    lateinit var favouritePersonsDb: FavouritePersonsDb
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentPersonsListBinding.inflate(inflater, container, false)
-        adapter = PersonListAdapter(favouritePersonsDb) { person ->
+        adapter = PersonListAdapter(object : FavouritesListener {
+            override fun isPersonFavourite(person: Person): Boolean = viewModel.isPersonFavourite(person)
+
+            override fun addPersonToFavourite(person: Person) {
+               viewModel.addPersonToFavourite(person)
+            }
+
+            override fun removePersonFromFavourite(person: Person) {
+                viewModel.removePersonFromFavourite(person)
+            }
+
+        }) { person ->
             viewModel.moreDetails(person, findNavController())
         }
         binding?.recyclerView?.adapter = adapter
@@ -109,8 +117,8 @@ class PersonsListFragment : Fragment() {
         builder.setPositiveButton(R.string.apply_filters) { _, _ ->
             viewModel.saveSelectedFilters(selectedItems)
             viewModel.applyFilters()
-        //    adapter.setData(viewModel.uiState.value.filteredPersons)
-     //       adapter.applyFilters()
+            //    adapter.setData(viewModel.uiState.value.filteredPersons)
+            //       adapter.applyFilters()
             if (adapter.itemCount == 0) {
                 binding?.noPersonOnList?.visibility = View.VISIBLE
             } else {
@@ -132,11 +140,11 @@ class PersonsListFragment : Fragment() {
             if (isNetworkAvailable(requireContext())) {
                 viewModel.uiState.collect { state ->
                     with(state) {
-                        Log.e("asdd",filteredPersons.size.toString())
+                        Log.e("asdd", filteredPersons.size.toString())
                         adapter.submitList(filteredPersons)
-                        adapter.setData(filteredPersons,binding?.searchView?.query.toString())
+                        adapter.setData(filteredPersons, binding?.searchView?.query.toString())
 
-                        Log.e("exposedbyvm",filteredPersons.size.toString())
+                        Log.e("exposedbyvm", filteredPersons.size.toString())
                         if (isLoading) {
                             _binding!!.loadingBar.visibility = View.VISIBLE
                         } else {
