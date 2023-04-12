@@ -20,7 +20,7 @@ class PersonsListViewModel @Inject constructor(
     private val filtersManager: FiltersManager,
     private val repository: Repository,
     private val personsFilter: PersonsFilter,
-    private val favouritePersonsDbImpl: FavouritePersonsDb
+    private val favouritePersonsDb: FavouritePersonsDb
 ) :
     ViewModel() {
     private val _uiState = MutableStateFlow(
@@ -34,12 +34,13 @@ class PersonsListViewModel @Inject constructor(
         viewModelScope.launch {
             val personsList = repository.getPersonsByPage(1)
             personsFilter.onPersonsListUpdated(personsList)
-            favouritePersonsDbImpl.onPersonsListUpdated(personsList)
+            favouritePersonsDb.onPersonsListUpdated(personsList)
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
                 allFetchedPersons = personsList,
                 filteredPersons = personsFilter.filter()
             )
+            matchFavouritePersonsWithDb()
         }
     }
 
@@ -57,7 +58,7 @@ class PersonsListViewModel @Inject constructor(
 
 
     fun getSavedFilters(): MutableSet<String> =
-        filtersManager.getSavedFilters().toMutableSet()
+        filtersManager.getSavedFiltersAsNumbers().toMutableSet()
 
 
     fun loadMorePersons() {
@@ -70,13 +71,14 @@ class PersonsListViewModel @Inject constructor(
             val newList = currentPersons + repository.getPersonsByPage(nextPage)
 
             personsFilter.onPersonsListUpdated(newList)
-            favouritePersonsDbImpl.onPersonsListUpdated(newList)
+            favouritePersonsDb.onPersonsListUpdated(newList)
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
                 currentPersonsPage = nextPage,
                 allFetchedPersons = newList,
                 filteredPersons = personsFilter.filter()
             )
+        matchFavouritePersonsWithDb()
         }
     }
 
@@ -87,14 +89,22 @@ class PersonsListViewModel @Inject constructor(
     }
 
     fun isPersonFavourite(person: Person): Boolean =
-        favouritePersonsDbImpl.getAllFavouritePersons().contains(person)
+        favouritePersonsDb.getFavouritePersons().contains(person)
 
     fun addPersonToFavourite(person: Person) {
-        favouritePersonsDbImpl.addPersonToFavourite(person)
+        favouritePersonsDb.addPersonToFavourite(person)
     }
 
     fun removePersonFromFavourite(person: Person) {
-        favouritePersonsDbImpl.removePersonFromFavourite(person)
+        favouritePersonsDb.removePersonFromFavourite(person)
     }
+
+    private fun matchFavouritePersonsWithDb(){
+        if (doesFavPersonsListMatchesDbSize()) {
+            loadMorePersons()
+        }
+    }
+
+    private fun doesFavPersonsListMatchesDbSize(): Boolean = filtersManager.doesFilterContainFavourite() && (personsFilter.filterFavourite().size < favouritePersonsDb.getAllFavouritePersonSize())
 
 }

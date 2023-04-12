@@ -9,21 +9,24 @@ class FavouritePersonsDb @Inject constructor(val context: Context) : PersonsList
     private var allPersonsList: List<Person> = mutableListOf()
 
     fun addPersonToFavourite(person: Person) {
-        val favPersons = getAllFavouritePersons().toMutableList()
+        val favPersons = getFavouritePersons().toMutableList()
         favPersons.add(person)
         saveCurrentFavPersonsList(favPersons = favPersons)
     }
 
     fun removePersonFromFavourite(person: Person) {
-        val favPersons = getAllFavouritePersons().toMutableList()
+        val favPersons = getFavouritePersons().toMutableList()
         favPersons.remove(person)
         saveCurrentFavPersonsList(favPersons = favPersons)
     }
 
-    fun getAllFavouritePersons(): List<Person> =
+    fun getFavouritePersons(): List<Person> =
         prefs.getStringSet(FAVOURITE_PERSONS, mutableSetOf())
             ?.mapToPersonList(allPersonsList)
             ?: mutableListOf()
+
+    fun getAllFavouritePersonSize(): Int =
+        prefs.getStringSet(FAVOURITE_PERSONS, mutableSetOf())?.size ?: 0
 
     override fun onPersonsListUpdated(personsList: List<Person>) {
         allPersonsList = personsList

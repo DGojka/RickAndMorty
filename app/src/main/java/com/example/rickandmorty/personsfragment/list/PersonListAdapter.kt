@@ -54,14 +54,17 @@ class PersonListAdapter(
     }
 
     fun setData(data: List<Person>, currentQuery: String = "") {
+        val filteredList = filterByNameOrStatus(currentQuery)
+        submitList(filteredList)
         personsList.apply {
             clear()
             addAll(data)
         }
         filteredByName.apply {
             clear()
-            addAll(filterByNameOrStatus(currentQuery))
+            addAll(filteredList)
         }
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =

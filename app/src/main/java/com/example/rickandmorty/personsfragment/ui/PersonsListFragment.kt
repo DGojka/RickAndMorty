@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,10 +41,11 @@ class PersonsListFragment : Fragment() {
     ): View? {
         _binding = FragmentPersonsListBinding.inflate(inflater, container, false)
         adapter = PersonListAdapter(object : FavouritesListener {
-            override fun isPersonFavourite(person: Person): Boolean = viewModel.isPersonFavourite(person)
+            override fun isPersonFavourite(person: Person): Boolean =
+                viewModel.isPersonFavourite(person)
 
             override fun addPersonToFavourite(person: Person) {
-               viewModel.addPersonToFavourite(person)
+                viewModel.addPersonToFavourite(person)
             }
 
             override fun removePersonFromFavourite(person: Person) {
@@ -77,10 +77,10 @@ class PersonsListFragment : Fragment() {
 
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-                Log.e("lastvisible", lastVisibleItemPosition.toString())
-                Log.e("asd", adapter.itemCount.toString())
                 if (lastVisibleItemPosition == adapter.itemCount - 1) {
-                    viewModel.loadMorePersons()
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        viewModel.loadMorePersons()
+                    }
                 }
             }
         })
@@ -138,8 +138,9 @@ class PersonsListFragment : Fragment() {
             if (isNetworkAvailable(requireContext())) {
                 viewModel.uiState.collect { state ->
                     with(state) {
-                        adapter.setData(filteredPersons, binding?.searchView?.query.toString())
-                        adapter.submitList(filteredPersons)
+                        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+                            adapter.setData(filteredPersons, binding?.searchView?.query.toString())
+                        }
                         if (isLoading) {
                             _binding!!.loadingBar.visibility = View.VISIBLE
                         } else {
@@ -150,7 +151,6 @@ class PersonsListFragment : Fragment() {
             } else {
                 Snackbar.make(view, R.string.no_internet, Snackbar.LENGTH_LONG).show()
             }
-
         }
     }
 

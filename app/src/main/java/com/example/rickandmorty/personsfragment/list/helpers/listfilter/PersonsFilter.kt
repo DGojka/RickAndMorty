@@ -10,10 +10,10 @@ class PersonsFilter @Inject constructor(
     private var personsList: List<Person>,
     private val filtersManager: FiltersManager,
     private val favouritePersonsDb: FavouritePersonsDb
-) : PersonsListCallback{
+) : PersonsListCallback {
 
     fun filter(): List<Person> {
-        val filters = filtersManager.getSavedFilters().toList().convertToFilterEnum()
+        val filters = filtersManager.getSavedFilters()
 
         return when {
             shouldFilterByFavouriteAndUnknownStatus(filters) -> filterFavouriteByUnknownStatus()
@@ -26,6 +26,9 @@ class PersonsFilter @Inject constructor(
             else -> personsList
         }
     }
+
+    fun filterFavourite() =
+        favouritePersonsDb.getFavouritePersons()
 
     override fun onPersonsListUpdated(personsList: List<Person>) {
         this.personsList = personsList
@@ -47,22 +50,19 @@ class PersonsFilter @Inject constructor(
         filters.contains(Filters.ALIVE) && filters.contains(Filters.DEAD)
 
     private fun filterFavouriteByUnknownStatus() =
-        favouritePersonsDb.getAllFavouritePersons().filter {
+        favouritePersonsDb.getFavouritePersons().filter {
             it.status == UNKNOWN
         }
 
     private fun filterFavouriteByDead() =
-        favouritePersonsDb.getAllFavouritePersons().filter {
+        favouritePersonsDb.getFavouritePersons().filter {
             it.status == DEAD
         }
 
     private fun filterFavouriteByAlive() =
-        favouritePersonsDb.getAllFavouritePersons().filter {
+        favouritePersonsDb.getFavouritePersons().filter {
             it.status == ALIVE
         }
-
-    private fun filterFavourite() =
-        favouritePersonsDb.getAllFavouritePersons()
 
     private fun filterByUnknownStatus() =
         personsList.filter {
@@ -78,17 +78,6 @@ class PersonsFilter @Inject constructor(
         personsList.filter {
             it.status == ALIVE
         }
-
-    private fun List<String>.convertToFilterEnum(): List<Filters> {
-        return this.map { intValue ->
-            when (intValue) {
-                "0", FAVOURITES -> Filters.FAVOURITE
-                "1", DEAD -> Filters.DEAD
-                "2", UNKNOWN -> Filters.ALIVE
-                else -> Filters.UNKNOWN_FILTER
-            }
-        }
-    }
 
     companion object {
         const val FAVOURITES = "Favourites"
