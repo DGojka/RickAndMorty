@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import com.example.rickandmorty.R
 import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
 import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager
+import com.example.rickandmorty.personsfragment.list.helpers.listfilter.Filters
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter
 import com.example.rickandmorty.repository.Person
 import com.example.rickandmorty.repository.Repository
@@ -57,8 +58,7 @@ class PersonsListViewModel @Inject constructor(
         filtersManager.saveSelectedFilters(selectedItems)
 
 
-    fun getSavedFilters(): MutableSet<String> =
-        filtersManager.getSavedFiltersAsNumbers().toMutableSet()
+    fun getSavedFilters(): List<Filters> = filtersManager.getSavedFilters()
 
 
     fun loadMorePersons() {

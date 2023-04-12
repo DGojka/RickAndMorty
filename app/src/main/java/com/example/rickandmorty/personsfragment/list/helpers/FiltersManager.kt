@@ -8,12 +8,8 @@ import javax.inject.Inject
 class FiltersManager @Inject constructor(context: Context) {
     private val prefs = context.getSharedPreferences(FILTERS, Context.MODE_PRIVATE)
 
-    fun getSavedFiltersAsNumbers(): Set<String> {
-        return prefs.getStringSet(FILTERS_KEY, null) ?: mutableSetOf()
-    }
-
     fun getSavedFilters(): List<Filters>{
-        return getSavedFiltersAsNumbers().toList().convertToFilterEnum()
+        return getSavedFiltersAsStringSetOfNumbers().toList().convertToFilterEnum()
     }
 
     fun doesFilterContainFavourite(): Boolean =
@@ -25,13 +21,16 @@ class FiltersManager @Inject constructor(context: Context) {
         editor.apply()
     }
 
+    private fun getSavedFiltersAsStringSetOfNumbers(): Set<String> {
+        return prefs.getStringSet(FILTERS_KEY, null) ?: mutableSetOf()
+    }
 
     private fun List<String>.convertToFilterEnum(): List<Filters> {
         return this.map { intValue ->
             when (intValue) {
                 "0", PersonsFilter.FAVOURITES -> Filters.FAVOURITE
                 "1", PersonsFilter.DEAD -> Filters.DEAD
-                "2", PersonsFilter.UNKNOWN -> Filters.ALIVE
+                "2", PersonsFilter.ALIVE -> Filters.ALIVE
                 else -> Filters.UNKNOWN_FILTER
             }
         }

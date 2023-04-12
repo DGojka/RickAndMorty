@@ -19,6 +19,7 @@ import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.FragmentPersonsListBinding
 import com.example.rickandmorty.personsfragment.list.PersonListAdapter
 import com.example.rickandmorty.personsfragment.list.helpers.FavouritesListener
+import com.example.rickandmorty.personsfragment.list.helpers.listfilter.Filters
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.ALIVE
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.DEAD
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.FAVOURITES
@@ -90,9 +91,15 @@ class PersonsListFragment : Fragment() {
 
     private fun getCurrentFilters(): ArrayList<Int> {
         val selectedItems = ArrayList<Int>()
-        viewModel.getSavedFilters().let {
-            for (i in it) {
-                selectedItems.add(i.toInt())
+        viewModel.getSavedFilters().let { filters ->
+            for (filter in filters) {
+                val intValue = when (filter) {
+                    Filters.FAVOURITE -> 0
+                    Filters.DEAD -> 1
+                    Filters.ALIVE -> 2
+                    Filters.UNKNOWN_FILTER -> 3
+                }
+                selectedItems.add(intValue)
             }
         }
         return selectedItems
