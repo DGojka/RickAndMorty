@@ -1,32 +1,37 @@
 package com.example.rickandmorty.personsfragment.list.helpers.listfilter
 
-import android.content.Context
 import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
-import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager.Companion.FILTERS
-import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager.Companion.FILTERS_KEY
+import com.example.rickandmorty.personsfragment.helpers.PersonsListCallback
+import com.example.rickandmorty.personsfragment.list.helpers.FiltersManager
 import com.example.rickandmorty.repository.Person
+import javax.inject.Inject
 
-class PersonsFilter(
-    private val personList: List<Person>,
-    private val context: Context,
+class PersonsFilter @Inject constructor(
+    private var personsList: List<Person>,
+    private val filtersManager: FiltersManager,
     private val favouritePersonsDb: FavouritePersonsDb
-) {
+) : PersonsListCallback {
 
-    fun filter(constraint: CharSequence?): List<Person> {
-        val filters = getFilters()
+    fun filter(): List<Person> {
+        val filters = filtersManager.getSavedFilters()
+
         return when {
-            shouldFilterByFavouriteAndUnknownStatus(filters) -> filterFavouriteByUnknownStatus(
-                constraint
-            )
-            shouldFilterByFavouriteAndDead(filters) -> filterFavouriteByDead(constraint)
-            shouldFilterByFavouriteAndAlive(filters) -> filterFavouriteByAlive(constraint)
-            shouldFilterByUnknownStatus(filters) -> filterByUnknownStatus(constraint)
-            filters.contains(Filters.FAVOURITE) -> filterFavourite(constraint)
-            filters.contains(Filters.DEAD) -> filterByDead(constraint)
-            filters.contains(Filters.ALIVE) -> filterByAlive(constraint)
-            else -> filterByNameOrStatus(constraint)
-
+            shouldFilterByFavouriteAndUnknownStatus(filters) -> filterFavouriteByUnknownStatus()
+            shouldFilterByFavouriteAndDead(filters) -> filterFavouriteByDead()
+            shouldFilterByFavouriteAndAlive(filters) -> filterFavouriteByAlive()
+            shouldFilterByUnknownStatus(filters) -> filterByUnknownStatus()
+            filters.contains(Filters.FAVOURITE) -> filterFavourite()
+            filters.contains(Filters.DEAD) -> filterByDead()
+            filters.contains(Filters.ALIVE) -> filterByAlive()
+            else -> personsList
         }
+    }
+
+    fun filterFavourite() =
+        favouritePersonsDb.getFavouritePersons()
+
+    override fun onPersonsListUpdated(personsList: List<Person>) {
+        this.personsList = personsList
     }
 
     private fun shouldFilterByFavouriteAndUnknownStatus(filters: List<Filters>) =
@@ -44,87 +49,35 @@ class PersonsFilter(
     private fun shouldFilterByUnknownStatus(filters: List<Filters>) =
         filters.contains(Filters.ALIVE) && filters.contains(Filters.DEAD)
 
-    private fun filterFavouriteByUnknownStatus(constraint: CharSequence?) =
-        favouritePersonsDb.getFavouritePersons(personList).filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) && it.status == UNKNOWN
+    private fun filterFavouriteByUnknownStatus() =
+        favouritePersonsDb.getFavouritePersons().filter {
+            it.status == UNKNOWN
         }
 
-    private fun filterFavouriteByDead(constraint: CharSequence?) =
-        favouritePersonsDb.getFavouritePersons(personList).filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) && it.status == DEAD
+    private fun filterFavouriteByDead() =
+        favouritePersonsDb.getFavouritePersons().filter {
+            it.status == DEAD
         }
 
-    private fun filterFavouriteByAlive(constraint: CharSequence?) =
-        favouritePersonsDb.getFavouritePersons(personList).filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) && it.status == ALIVE
+    private fun filterFavouriteByAlive() =
+        favouritePersonsDb.getFavouritePersons().filter {
+            it.status == ALIVE
         }
 
-    private fun filterFavourite(constraint: CharSequence?) =
-        favouritePersonsDb.getFavouritePersons(personList).filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) || it.status.contains(constraint.toString(), ignoreCase = true)
+    private fun filterByUnknownStatus() =
+        personsList.filter {
+            it.status == UNKNOWN
         }
 
-    private fun filterByUnknownStatus(constraint: CharSequence?) =
-        personList.filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) && it.status == UNKNOWN
-
+    private fun filterByDead() =
+        personsList.filter {
+            it.status == DEAD
         }
 
-    private fun filterByDead(constraint: CharSequence?) =
-        personList.filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) && it.status == DEAD
+    private fun filterByAlive() =
+        personsList.filter {
+            it.status == ALIVE
         }
-
-    private fun filterByAlive(constraint: CharSequence?) =
-        personList.filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) && it.status == ALIVE
-        }
-
-    private fun filterByNameOrStatus(constraint: CharSequence?) =
-        personList.filter {
-            it.name.contains(
-                constraint.toString(),
-                ignoreCase = true
-            ) || it.status.contains(constraint.toString(), ignoreCase = true)
-        }
-
-    private fun getFilters(): MutableList<Filters> {
-        val filters = context.getSharedPreferences(FILTERS, Context.MODE_PRIVATE)
-            .getStringSet(FILTERS_KEY, null)?.toList() ?: mutableListOf()
-        return filters.convertToFilterEnum().toMutableList()
-    }
-
-    private fun List<String>.convertToFilterEnum(): List<Filters> {
-        return this.map { intValue ->
-            when (intValue) {
-                "0", FAVOURITES -> Filters.FAVOURITE
-                "1", DEAD -> Filters.DEAD
-                "2", UNKNOWN -> Filters.ALIVE
-                else -> Filters.UNKNOWN_FILTER
-            }
-        }
-    }
 
     companion object {
         const val FAVOURITES = "Favourites"

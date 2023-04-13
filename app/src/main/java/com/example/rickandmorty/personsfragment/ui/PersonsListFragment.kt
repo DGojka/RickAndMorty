@@ -17,15 +17,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.FragmentPersonsListBinding
-import com.example.rickandmorty.personsfragment.helpers.FavouritePersonsDb
 import com.example.rickandmorty.personsfragment.list.PersonListAdapter
+import com.example.rickandmorty.personsfragment.list.helpers.FavouritesListener
+import com.example.rickandmorty.personsfragment.list.helpers.listfilter.Filters
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.ALIVE
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.DEAD
 import com.example.rickandmorty.personsfragment.list.helpers.listfilter.PersonsFilter.Companion.FAVOURITES
+import com.example.rickandmorty.repository.Person
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class PersonsListFragment : Fragment() {
@@ -35,15 +36,24 @@ class PersonsListFragment : Fragment() {
     private lateinit var adapter: PersonListAdapter
     private val viewModel: PersonsListViewModel by activityViewModels()
 
-    @Inject
-    lateinit var favouritePersonsDb: FavouritePersonsDb
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentPersonsListBinding.inflate(inflater, container, false)
-        adapter = PersonListAdapter(requireContext(), favouritePersonsDb) { person ->
+        adapter = PersonListAdapter(object : FavouritesListener {
+            override fun isPersonFavourite(person: Person): Boolean =
+                viewModel.isPersonFavourite(person)
+
+            override fun addPersonToFavourite(person: Person) {
+                viewModel.addPersonToFavourite(person)
+            }
+
+            override fun removePersonFromFavourite(person: Person) {
+                viewModel.removePersonFromFavourite(person)
+            }
+
+        }) { person ->
             viewModel.moreDetails(person, findNavController())
         }
         binding?.recyclerView?.adapter = adapter
@@ -62,16 +72,16 @@ class PersonsListFragment : Fragment() {
         binding?.manageFiltersButton?.setOnClickListener {
             showFiltersDialog()
         }
-
         binding?.recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-
-                if (lastVisibleItemPosition == adapter.getAllItemsCount() - 1) {
-                    viewModel.loadMorePersons()
+                if (lastVisibleItemPosition == adapter.itemCount - 1) {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        viewModel.loadMorePersons()
+                    }
                 }
             }
         })
@@ -81,9 +91,15 @@ class PersonsListFragment : Fragment() {
 
     private fun getCurrentFilters(): ArrayList<Int> {
         val selectedItems = ArrayList<Int>()
-        viewModel.getSavedFilters().let {
-            for (i in it) {
-                selectedItems.add(i.toInt())
+        viewModel.getSavedFilters().let { filters ->
+            for (filter in filters) {
+                val intValue = when (filter) {
+                    Filters.FAVOURITE -> 0
+                    Filters.DEAD -> 1
+                    Filters.ALIVE -> 2
+                    Filters.UNKNOWN_FILTER -> 3
+                }
+                selectedItems.add(intValue)
             }
         }
         return selectedItems
@@ -107,7 +123,7 @@ class PersonsListFragment : Fragment() {
         }
         builder.setPositiveButton(R.string.apply_filters) { _, _ ->
             viewModel.saveSelectedFilters(selectedItems)
-            adapter.applyFilters()
+            viewModel.applyFilters()
             if (adapter.itemCount == 0) {
                 binding?.noPersonOnList?.visibility = View.VISIBLE
             } else {
@@ -129,8 +145,9 @@ class PersonsListFragment : Fragment() {
             if (isNetworkAvailable(requireContext())) {
                 viewModel.uiState.collect { state ->
                     with(state) {
-                        adapter.submitList(allFetchedPersons)
-                        adapter.setData(allFetchedPersons)
+                        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+                            adapter.setData(filteredPersons, binding?.searchView?.query.toString())
+                        }
                         if (isLoading) {
                             _binding!!.loadingBar.visibility = View.VISIBLE
                         } else {
@@ -141,7 +158,6 @@ class PersonsListFragment : Fragment() {
             } else {
                 Snackbar.make(view, R.string.no_internet, Snackbar.LENGTH_LONG).show()
             }
-
         }
     }
 

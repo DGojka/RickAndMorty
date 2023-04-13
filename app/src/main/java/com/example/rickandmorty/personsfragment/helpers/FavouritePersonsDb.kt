@@ -2,20 +2,41 @@ package com.example.rickandmorty.personsfragment.helpers
 
 import android.content.Context
 import com.example.rickandmorty.repository.Person
+import javax.inject.Inject
 
-class FavouritePersonsDb(val context: Context) {
+class FavouritePersonsDb @Inject constructor(val context: Context) : PersonsListCallback {
     private val prefs = context.getSharedPreferences(FAVOURITE_PERSONS, Context.MODE_PRIVATE)
+    private var allPersonsList: List<Person> = mutableListOf()
 
-    fun getFavouritePersons(personsList: List<Person>): MutableList<Person> =
-        prefs.getStringSet(FAVOURITE_PERSONS, mutableSetOf())?.mapToPersonList(personsList)
+    fun addPersonToFavourite(person: Person) {
+        val favPersons = getFavouritePersons().toMutableList()
+        favPersons.add(person)
+        saveCurrentFavPersonsList(favPersons = favPersons)
+    }
+
+    fun removePersonFromFavourite(person: Person) {
+        val favPersons = getFavouritePersons().toMutableList()
+        favPersons.remove(person)
+        saveCurrentFavPersonsList(favPersons = favPersons)
+    }
+
+    fun getFavouritePersons(): List<Person> =
+        prefs.getStringSet(FAVOURITE_PERSONS, mutableSetOf())
+            ?.mapToPersonList(allPersonsList)
             ?: mutableListOf()
 
-    fun saveCurrentFavPersonsList(favPersons: List<Person>){
+    fun getAllFavouritePersonSize(): Int =
+        prefs.getStringSet(FAVOURITE_PERSONS, mutableSetOf())?.size ?: 0
+
+    override fun onPersonsListUpdated(personsList: List<Person>) {
+        allPersonsList = personsList
+    }
+
+    private fun saveCurrentFavPersonsList(favPersons: List<Person>) {
         val editor = prefs.edit()
         editor.putStringSet(FAVOURITE_PERSONS, favPersons.map { it.id.toString() }.toSet())
         editor.apply()
     }
-
 
     private fun MutableSet<String>.mapToPersonList(personsList: List<Person>): MutableList<Person> {
         return this.mapNotNull { id ->
@@ -26,4 +47,5 @@ class FavouritePersonsDb(val context: Context) {
     companion object {
         const val FAVOURITE_PERSONS = "FavouritePersonsId"
     }
+
 }
